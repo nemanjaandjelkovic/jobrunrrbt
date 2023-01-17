@@ -1,0 +1,20 @@
+version: '3.0'
+
+services:
+  db:
+    image: 'postgres'
+    container_name: db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=JobRunrRBT
+  jobrnr-service:
+    image: 'jobrnr'
+    container_name: jobrnr
+    build: ./
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"

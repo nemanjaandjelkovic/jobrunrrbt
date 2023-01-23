@@ -28,6 +28,9 @@ dependencies {
 	implementation ("com.fasterxml.jackson.core:jackson-databind:2.11.0")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.3")
+
 }
 
 tasks.withType<KotlinCompile> {

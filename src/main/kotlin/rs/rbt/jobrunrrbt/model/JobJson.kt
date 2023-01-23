@@ -8,7 +8,7 @@ class JobJson (
     var jobName: String,
     var jobDetails: JobDetails,
     var id: String,
-    var jobHistory: JobHistory,
+    var jobHistory: List<JobHistory>,
     //metadata
 
 

@@ -21,3 +21,4 @@ class Job (
     var scheduledAt: LocalDateTime,
 
     )
+

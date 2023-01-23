@@ -4,7 +4,7 @@ class JobDetails (
     var className: String,
     var staticFieldName: String?,
     var methodName: String,
-    var jobParameters: JobParameters,
+    var jobParameters: List<JobParameters>,
     var cacheable: Boolean,
 )
 

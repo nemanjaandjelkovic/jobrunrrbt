@@ -1,4 +1,4 @@
-package rs.rbt.jobrunrrbt.repository;
+package rs.rbt.jobrunrrbt.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -9,5 +9,8 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
 
     @Query("select new rs.rbt.jobrunrrbt.helper.JobDTO(JobrunrJob .id,JobrunrJob .jobsignature,JobrunrJob .state,JobrunrJob .scheduledat)")
     fun returnAllJobsForFront():List<JobDTO>
+
+    @Query("select new rs.rbt.jobrunrrbt.helper.JobDTO(JobrunrJob .id,JobrunrJob .jobsignature,JobrunrJob .state,JobrunrJob .scheduledat) from JobrunrJob where JobrunrJob .state = ?1")
+    fun returnAllJobsWithMatchingState(state: String):List<JobDTO>
 
 }

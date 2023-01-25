@@ -13,4 +13,10 @@ class JobService {
 
     }
 
+    fun returnWhereStateMatchesListOfJobDTO(string: String): List<JobDTO> {
+
+        return jobrunrJobRepository.returnAllJobsWithMatchingState(string)
+
+    }
+
 }

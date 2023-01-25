@@ -1,3 +1,4 @@
+/*
 package rs.rbt.jobrunrrbt.model
 
 import jakarta.persistence.Column
@@ -22,3 +23,4 @@ class Job (
 
     )
 
+*/

@@ -8,5 +8,4 @@ import rs.rbt.jobrunrrbt.model.Job
 interface JobRepository: JpaRepository<Job,String> {
 
 
-
 }

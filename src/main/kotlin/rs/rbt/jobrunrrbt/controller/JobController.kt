@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import rs.rbt.jobrunrrbt.helper.FILTER_PARAM
 import rs.rbt.jobrunrrbt.helper.JobDTO
 import rs.rbt.jobrunrrbt.service.JobService
 
@@ -20,7 +21,7 @@ class JobController {
     }
 
     @GetMapping("/state")
-    fun sendFilteredByState(@RequestParam(value = "filterParam", required = true) filterParam: String): List<JobDTO> {
+    fun sendFilteredByState(@RequestParam(value = FILTER_PARAM, required = true) filterParam: String): List<JobDTO> {
 
         return jobService.returnWhereStateMatchesListOfJobDTO(filterParam)
     }

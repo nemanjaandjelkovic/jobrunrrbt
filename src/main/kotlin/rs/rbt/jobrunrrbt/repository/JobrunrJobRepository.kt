@@ -2,15 +2,15 @@ package rs.rbt.jobrunrrbt.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import rs.rbt.jobrunrrbt.helper.JobDTO
+import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.model.JobrunrJob
 
 interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
 
-    @Query("select new rs.rbt.jobrunrrbt.helper.JobDTO(JobrunrJob .id,JobrunrJob .jobsignature,JobrunrJob .state,JobrunrJob .scheduledat)")
+    @Query(QUERY_ALL_TO_DTO_LIST)
     fun returnAllJobsForFront():List<JobDTO>
 
-    @Query("select new rs.rbt.jobrunrrbt.helper.JobDTO(JobrunrJob .id,JobrunrJob .jobsignature,JobrunrJob .state,JobrunrJob .scheduledat) from JobrunrJob where JobrunrJob .state = ?1")
+    @Query(QUERY_ALL_TO_DTO_LIST_WHERE_STATE_MATCHES)
     fun returnAllJobsWithMatchingState(state: String):List<JobDTO>
 
 }

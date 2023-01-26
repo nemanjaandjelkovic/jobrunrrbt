@@ -6,18 +6,5 @@ class JobDetails (
     var methodName: String,
     var jobParameters: List<JobParameters>,
     var cacheable: Boolean,
+
 )
-
-
-
-/*"className": "org.jobrunr.examples.services.MyServiceInterface",
-    "staticFieldName": null,
-    "methodName": "doSimpleJob",
-    "jobParameters": [
-      {
-        "className": "java.lang.String",
-        "actualClassName": "java.lang.String",
-        "object": "Hello world"
-      }
-    ],
-    "cacheable": true*/

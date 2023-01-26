@@ -9,10 +9,4 @@ class JobParameters (
     @JsonProperty("object")
     var jobObject: String,
 
-
-
 )
-
-/* "className": "java.lang.String",
-        "actualClassName": "java.lang.String",
-        "object": "Hello world"*/

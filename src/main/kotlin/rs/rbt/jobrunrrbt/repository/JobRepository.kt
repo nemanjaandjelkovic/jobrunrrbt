@@ -1,3 +1,4 @@
+/*
 package rs.rbt.jobrunrrbt.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
@@ -8,4 +9,5 @@ import rs.rbt.jobrunrrbt.model.Job
 interface JobRepository: JpaRepository<Job,String> {
 
 
-}
+
+}*/

@@ -19,4 +19,10 @@ class JobService {
 
     }
 
+    fun returnWhereClassMAtchesListOfJobDTO(string: String): List<JobDTO> {
+
+        return jobrunrJobRepository.returnAllJobsWithMatchingClass(string)
+
+    }
+
 }

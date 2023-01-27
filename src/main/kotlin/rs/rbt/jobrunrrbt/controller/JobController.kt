@@ -26,7 +26,10 @@ class JobController {
         return jobService.returnWhereStateMatchesListOfJobDTO(filterParam)
     }
 
+    @GetMapping("/class")
+    fun sendFilteredByClass(@RequestParam(value = FILTER_PARAM, required = true) filterParam: String): List<JobDTO> {
 
-
+        return jobService.returnWhereClassMAtchesListOfJobDTO(filterParam)
+    }
 
 }

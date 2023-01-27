@@ -13,4 +13,7 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
     @Query(QUERY_ALL_TO_DTO_LIST_WHERE_STATE_MATCHES)
     fun returnAllJobsWithMatchingState(state: String):List<JobDTO>
 
+    @Query(QUERY_ALL_TO_DTO_LIST_WHERE_CLASS_MATCHES)
+    fun returnAllJobsWithMatchingClass(string: String):List<JobDTO>
+
 }

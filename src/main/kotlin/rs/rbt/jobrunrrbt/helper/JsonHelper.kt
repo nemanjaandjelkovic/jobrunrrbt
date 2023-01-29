@@ -4,7 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import rs.rbt.jobrunrrbt.model.JobJson
 
-fun serialize(job: JobJson): String? {
+fun serialize(job: JobJson): String {
 
     val mapper = jacksonObjectMapper()
     mapper.findAndRegisterModules()

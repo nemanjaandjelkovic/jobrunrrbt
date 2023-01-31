@@ -53,4 +53,9 @@ class JobService {
         }
     }
 
+    fun returnWhereMethodMathesListOfJobDTO(string: String): List<JobDTO> {
+
+        return jobrunrJobRepository.returnAllJobsWithMatchingMethod(string)
+    }
+
 }

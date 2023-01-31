@@ -25,4 +25,7 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
     @Query(UPDATE_JOBASJSON)
     fun updateJobAsJson(id:String, value: String)
 
+    @Query(QUERY_ALL_TO_DTO_LIST_WHERE_METHOD_MATCHES)
+    fun returnAllJobsWithMatchingMethod(string: String):List<JobDTO>
+
 }

@@ -1,11 +1,10 @@
 package rs.rbt.jobrunrrbt.controller
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import rs.rbt.jobrunrrbt.helper.FILTER_PARAM
+import rs.rbt.jobrunrrbt.helper.ID
 import rs.rbt.jobrunrrbt.helper.JobDTO
+import rs.rbt.jobrunrrbt.helper.VALUE
 import rs.rbt.jobrunrrbt.service.JobService
 
 @RestController
@@ -30,6 +29,12 @@ class JobController {
     fun sendFilteredByClass(@RequestParam(value = FILTER_PARAM, required = true) filterParam: String): List<JobDTO> {
 
         return jobService.returnWhereClassMAtchesListOfJobDTO(filterParam)
+    }
+
+    @PostMapping("/updateClass")
+    fun updateJobClass(@RequestParam(value = ID, required = true) id: String, @RequestParam(value = VALUE, required = true) value: String) {
+
+        jobService.updateJobPackage(id,value)
     }
 
 }

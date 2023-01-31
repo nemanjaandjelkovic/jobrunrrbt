@@ -21,3 +21,4 @@ const val QUERY_ALL_TO_DTO_LIST_WHERE_CLASS_MATCHES: String = "select new rs.rbt
 const val UPDATE_JOB_SIGNATURE: String = "update JobrunrJob job set job.jobsignature = ?2 where job.id = ?1"
 const val UPDATE_JOBASJSON: String = "update JobrunrJob job set job.jobasjson = ?2 where job.id = ?1"
 const val VALUE: String = "value"
+const val QUERY_ALL_TO_DTO_LIST_WHERE_METHOD_MATCHES: String = "select new rs.rbt.jobrunrrbt.helper.JobDTO(JobrunrJob .id,JobrunrJob .jobsignature,JobrunrJob .state,JobrunrJob .scheduledat) from JobrunrJob j where j.jobsignature like concat('%', ?1)"

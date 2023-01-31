@@ -53,6 +53,29 @@ class JobService {
         }
     }
 
+    fun updateJobMethod(id: String,newMethodName: String) {
+
+        if (jobrunrJobRepository.existsById(id)) {
+
+            val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(id)
+            val jobJson: JobJson = deserialize(job.get().jobasjson!!)
+            val newJobSignature: String = jobJson.jobDetails.className.plus(".")
+                .plus(newMethodName)
+                .plus("(")
+                .plus(jobJson.jobDetails.jobParameters)
+                .plus(")")
+
+            jobJson.jobDetails.methodName = newMethodName
+            jobJson.jobSignature = newJobSignature
+
+            val newJobJson: String = serialize(jobJson)
+
+            jobrunrJobRepository.updateJobSignature(id, newJobSignature)
+            jobrunrJobRepository.updateJobAsJson(id, newJobJson)
+
+        }
+    }
+
     fun returnWhereMethodMathesListOfJobDTO(string: String): List<JobDTO> {
 
         return jobrunrJobRepository.returnAllJobsWithMatchingMethod(string)

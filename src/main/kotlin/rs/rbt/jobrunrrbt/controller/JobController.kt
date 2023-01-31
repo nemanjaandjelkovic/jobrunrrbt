@@ -1,10 +1,7 @@
 package rs.rbt.jobrunrrbt.controller
 
 import org.springframework.web.bind.annotation.*
-import rs.rbt.jobrunrrbt.helper.FILTER_PARAM
-import rs.rbt.jobrunrrbt.helper.ID
-import rs.rbt.jobrunrrbt.helper.JobDTO
-import rs.rbt.jobrunrrbt.helper.VALUE
+import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.service.JobService
 
 @RestController
@@ -41,6 +38,12 @@ class JobController {
 
 
         return jobService.returnWhereMethodMathesListOfJobDTO(filterParam)
+    }
+
+    @PostMapping("/updateMethod")
+    fun updateJobMethod(@RequestParam(value = ID, required = true) id: String, @RequestParam(value = VALUE, required = true) value: String) {
+
+        jobService.updateJobMethod(id,value)
     }
 
 }

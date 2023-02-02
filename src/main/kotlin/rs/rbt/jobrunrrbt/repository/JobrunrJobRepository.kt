@@ -5,27 +5,26 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.model.JobrunrJob
+import java.util.*
 
-interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
+interface JobrunrJobRepository : JpaRepository<JobrunrJob, UUID> {
 
-    @Query(QUERY_ALL_TO_DTO_LIST)
-    fun returnAllJobsForFront():List<JobDTO>
+    @Query("FROM JobrunrJob j")
+    fun findAllJobs(): List<JobrunrJob>
 
-    @Query(QUERY_ALL_TO_DTO_LIST_WHERE_STATE_MATCHES)
-    fun returnAllJobsWithMatchingState(state: String):List<JobDTO>
 
-    @Query(QUERY_ALL_TO_DTO_LIST_WHERE_CLASS_MATCHES)
-    fun returnAllJobsWithMatchingClass(string: String):List<JobDTO>
+    fun findJobrunrJobsByState(state: String):List<JobrunrJob>
+
+    fun findJobrunrJobsByJobsignatureContains(string: String):List<JobrunrJob>
+    @Modifying
+    @Query("update JobrunrJob set jobsignature = ?2 where id = ?1")
+    fun updateJobSignature(id: UUID, value: String)
 
     @Modifying
-    @Query(UPDATE_JOB_SIGNATURE)
-    fun updateJobSignature(id: String, value: String)
+    @Query("update JobrunrJob set jobasjson = ?2 where id = ?1")
+    fun updateJobAsJson(id: UUID, value: String)
 
-    @Modifying
-    @Query(UPDATE_JOBASJSON)
-    fun updateJobAsJson(id:String, value: String)
-
-    @Query(QUERY_ALL_TO_DTO_LIST_WHERE_METHOD_MATCHES)
-    fun returnAllJobsWithMatchingMethod(string: String):List<JobDTO>
+//    @Query(QUERY_ALL_TO_DTO_LIST_WHERE_METHOD_MATCHES)
+//    fun returnAllJobsWithMatchingMethod(string: String):List<JobrunrJob>
 
 }

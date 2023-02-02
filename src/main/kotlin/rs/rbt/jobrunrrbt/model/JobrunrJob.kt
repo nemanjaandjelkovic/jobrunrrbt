@@ -6,13 +6,14 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import rs.rbt.jobrunrrbt.helper.*
 import java.time.Instant
+import java.util.*
 
 @Entity
 @Table(name = JOBRUNR_JOBS_TABLE_NAME)
 open class JobrunrJob {
     @Id
-    @Column(name = ID, nullable = false, length = 36)
-    open var id: String? = null
+    @Column(name = ID, nullable = false)
+    open var id: Any? = null
 
     @Column(name = VERSION, nullable = false)
     open var version: Int? = null
@@ -36,5 +37,5 @@ open class JobrunrJob {
     open var scheduledat: Instant? = null
 
     @Column(name = RECCURINGJOBID, length = 128)
-    open var recurringjobid: String? = null
+    open var recurringjobid: Any? = null
 }

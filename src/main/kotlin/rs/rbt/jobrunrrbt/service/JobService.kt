@@ -1,6 +1,7 @@
 package rs.rbt.jobrunrrbt.service
 
-import rs.rbt.jobrunrrbt.helper.JobDTO
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
 import rs.rbt.jobrunrrbt.helper.deserialize
 import rs.rbt.jobrunrrbt.helper.serialize
 import rs.rbt.jobrunrrbt.model.JobJson
@@ -8,77 +9,99 @@ import rs.rbt.jobrunrrbt.model.JobrunrJob
 import rs.rbt.jobrunrrbt.repository.JobrunrJobRepository
 import java.util.*
 
+@Service
 class JobService {
 
+    @Autowired
     lateinit var jobrunrJobRepository: JobrunrJobRepository
 
-    fun returnListOfJobDTO(): List<JobDTO> {
+    fun returnAllJobs(): MutableList<JobJson?> {
 
-        return jobrunrJobRepository.returnAllJobsForFront()
+        val lista: List<JobrunrJob> = jobrunrJobRepository.findAllJobs()
+        val lista2: MutableList<JobJson?> = mutableListOf()
 
-    }
-
-    fun returnWhereStateMatchesListOfJobDTO(string: String): List<JobDTO> {
-
-        return jobrunrJobRepository.returnAllJobsWithMatchingState(string)
-
-    }
-
-    fun returnWhereClassMAtchesListOfJobDTO(string: String): List<JobDTO> {
-
-        return jobrunrJobRepository.returnAllJobsWithMatchingClass(string)
-
-    }
-
-    fun updateJobPackage(id: String,newClassName: String) {
-
-        if (jobrunrJobRepository.existsById(id)) {
-
-            val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(id)
-            val jobJson: JobJson = deserialize(job.get().jobasjson!!)
-            val newJobSignature: String = newClassName.plus(".")
-                .plus(jobJson.jobDetails.methodName)
-                .plus("(")
-                .plus(jobJson.jobDetails.jobParameters)
-                .plus(")")
-
-            jobJson.jobDetails.className = newClassName
-            jobJson.jobSignature = newJobSignature
-
-            val newJobJson: String = serialize(jobJson)
-
-            jobrunrJobRepository.updateJobSignature(id, newJobSignature)
-            jobrunrJobRepository.updateJobAsJson(id, newJobJson)
-
+        for ( a in lista ) {
+            lista2.add(deserialize(a.jobasjson!!))
         }
+        return lista2
+
     }
 
-    fun updateJobMethod(id: String,newMethodName: String) {
+    fun returnAllJobsWhereStateMatches(string: String): MutableList<JobJson> {
 
-        if (jobrunrJobRepository.existsById(id)) {
+        val lista = jobrunrJobRepository.findJobrunrJobsByState(string)
+        val lista2: MutableList<JobJson> = mutableListOf()
 
-            val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(id)
-            val jobJson: JobJson = deserialize(job.get().jobasjson!!)
-            val newJobSignature: String = jobJson.jobDetails.className.plus(".")
-                .plus(newMethodName)
-                .plus("(")
-                .plus(jobJson.jobDetails.jobParameters)
-                .plus(")")
-
-            jobJson.jobDetails.methodName = newMethodName
-            jobJson.jobSignature = newJobSignature
-
-            val newJobJson: String = serialize(jobJson)
-
-            jobrunrJobRepository.updateJobSignature(id, newJobSignature)
-            jobrunrJobRepository.updateJobAsJson(id, newJobJson)
-
+        for ( a in lista ) {
+            lista2.add(deserialize(a.jobasjson!!))
         }
+
+        return lista2
+
     }
 
-    fun returnWhereMethodMathesListOfJobDTO(string: String): List<JobDTO> {
+    fun returnAllJobsWhereClassMatches(string: String): MutableList<JobJson?> {
 
-        return jobrunrJobRepository.returnAllJobsWithMatchingMethod(string)
+        val lista: List<JobrunrJob> = jobrunrJobRepository.findJobrunrJobsByJobsignatureContains(string)
+        val lista2: MutableList<JobJson?> = mutableListOf()
+
+        for ( a in lista ) {
+
+            lista2.add(deserialize(a.jobasjson!!))
+        }
+        return lista2
+
     }
+
+//    fun updateJobPackage(id: String, newClassName: String) {
+//
+//        if (jobrunrJobRepository.existsById(UUID.fromString(id))) {
+//
+//            val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(UUID.fromString(id))
+//            val jobJson: JobJson = deserialize(job.get().jobasjson!!)
+//            val newJobSignature: String = newClassName.plus(".")
+//                .plus(jobJson.jobDetails.methodName)
+//                .plus("(")
+//                .plus(jobJson.jobDetails.jobParameters)
+//                .plus(")")
+//
+//            jobJson.jobDetails.className = newClassName
+//            jobJson.jobSignature = newJobSignature
+//
+//            val newJobJson: String = serialize(jobJson)
+//
+//            jobrunrJobRepository.updateJobSignature(UUID.fromString(id), newJobSignature)
+//            jobrunrJobRepository.updateJobAsJson(UUID.fromString(id), newJobJson)
+//
+//        }
+//    }
+//
+//    fun updateJobMethod(id: String, newMethodName: String) {
+//
+//        if (jobrunrJobRepository.existsById(UUID.fromString(id))) {
+//
+//            val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(UUID.fromString(id))
+//            val jobJson: JobJson = deserialize(job.get().jobasjson!!)
+//            val newJobSignature: String = jobJson.jobDetails.className.plus(".")
+//                .plus(newMethodName)
+//                .plus("(")
+//                .plus(jobJson.jobDetails.jobParameters)
+//                .plus(")")
+//
+//            jobJson.jobDetails.methodName = newMethodName
+//            jobJson.jobSignature = newJobSignature
+//
+//            val newJobJson: String = serialize(jobJson)
+//
+//            jobrunrJobRepository.updateJobSignature(UUID.fromString(id), newJobSignature)
+//            jobrunrJobRepository.updateJobAsJson(UUID.fromString(id), newJobJson)
+//
+//        }
+//    }
+
+//    fun returnWhereMethodMathesListOfJobDTO(string: String): List<JobDTO> {
+//
+//        return jobrunrJobRepository.returnAllJobsWithMatchingMethod(string)
+//    }
 
 }

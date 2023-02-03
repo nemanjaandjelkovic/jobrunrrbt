@@ -13,7 +13,7 @@ import java.util.*
 open class JobrunrJob {
     @Id
     @Column(name = ID, nullable = false)
-    open var id: Any? = null
+    open var id: String? = null
 
     @Column(name = VERSION, nullable = false)
     open var version: Int? = null

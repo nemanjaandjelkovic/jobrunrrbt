@@ -4,9 +4,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.query.Param
 import rs.rbt.jobrunrrbt.helper.*
-import rs.rbt.jobrunrrbt.model.JobJson
 import rs.rbt.jobrunrrbt.model.JobrunrJob
 import java.util.*
 
@@ -14,32 +12,40 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
 
     @Query("FROM JobrunrJob j")
     fun findAllJobs(): List<JobrunrJob>
-
-
     fun findJobrunrJobsByState(state: String):List<JobrunrJob>
-
-    fun findJobrunrJobsByJobsignatureContains(string: String):List<JobrunrJob>
+    @Query(
+        """select j from JobrunrJob j 
+        where j.state = ?1 and j.jobsignature like concat('%', ?2, '%', '(', '%')"""
+    )
+    fun findJobsByClassAndMethod(state:String,value: String,pageable: Pageable):List<JobrunrJob>
 
     fun findJobrunrJobsByJobsignatureStartsWith(string: String):List<JobrunrJob>
-//"""
-//        SELECT CASE
-//                WHEN COUNT(cdr.id) > 0 THEN TRUE
-//                ELSE FALSE END
-//        FROM ChargeDetailRecordDbEntity cdr
-//        WHERE cdr.dateOfReceipt <> :dateOfReceipt
-//            AND ((cdr.externalCdrId = :externalCdrId AND (cdr.evcoId = :evcoId OR cdr.emaId = :emaId OR cdr.rfId = :rfId) AND cdr.evseId = :evseId)
-//            AND (cdr.sessionStart = :sessionStart AND (cdr.evcoId = :evcoId OR cdr.emaId = :emaId OR cdr.rfId = :rfId) AND cdr.evseId = :evseId)
-//        )
-//    """
-    @Query("(select j.jobasjson from jobrunr_jobs j where j.state =:state and j.jobsignature  like :value limit :limit offset :offset)", nativeQuery = true)
-    fun searchByStateAndParam(
-    @Param("state")state: String,
-    @Param("offset")offset: Int,
-    @Param("limit")limit: Int,
-    //@Param("orderBy")order: String,
-    //@Param("direction")direction: String,
-    @Param("value")value: String
-    ): MutableList<JobJson>
+    @Query(
+        """select j from JobrunrJob j 
+        where j.state = ?1 and j.jobsignature like concat('%', '.', '%', ?2, '%', '.', '%', '(', '%')"""
+    )
+    fun findJobsWhereClassMatches(state: String, value: String,pageable: Pageable):MutableList<JobrunrJob>
+    @Query(
+        """select * from jobrunr_jobs j where j.state =?1 and j.jobsignature ~ ?2""", nativeQuery = true
+    )
+    fun findJobsWhereMethodMatches(state: String,regex: String,pageable: Pageable):MutableList<JobrunrJob>
+
+    @Query(
+        """select count(j) from JobrunrJob j 
+        where j.state = ?1 and j.jobsignature like concat('%', '.', '%', ?2, '%', '.', '%', '(', '%')"""
+    )
+    fun countJobsWhereClassMatches(state: String, value: String):Int
+    @Query(
+        """select count (*) from jobrunr_jobs j where j.state =?1 and j.jobsignature ~ ?2""", nativeQuery = true
+    )
+    fun countJobsWhereMethodMatches(state: String,regex: String):Int
+
+    @Query(
+        """select count(j) from JobrunrJob j 
+        where j.state = ?1 and j.jobsignature like concat('%', ?2, '%', '(', '%')"""
+    )
+    fun countJobsByClassAndMethod(state:String,value: String):Int
+
 
     @Modifying
     @Query("update JobrunrJob set jobsignature = ?2 where id = ?1")

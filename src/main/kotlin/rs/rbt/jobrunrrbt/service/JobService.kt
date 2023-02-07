@@ -1,7 +1,13 @@
 package rs.rbt.jobrunrrbt.service
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Direction
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Service
+import rs.rbt.jobrunrrbt.helper.JobDTO
 import rs.rbt.jobrunrrbt.helper.deserialize
 import rs.rbt.jobrunrrbt.helper.serialize
 import rs.rbt.jobrunrrbt.model.JobJson
@@ -17,53 +23,107 @@ class JobService {
 
     fun returnAllJobs(): MutableList<JobJson?> {
 
-        val lista: List<JobrunrJob> = jobrunrJobRepository.findAllJobs()
-        val lista2: MutableList<JobJson?> = mutableListOf()
+        val jobList: List<JobrunrJob> = jobrunrJobRepository.findAllJobs()
+        val returnList: MutableList<JobJson?> = mutableListOf()
 
-        for ( a in lista ) {
-            lista2.add(deserialize(a.jobasjson!!))
+        for (job in jobList) {
+            returnList.add(deserialize(job.jobasjson!!))
         }
-        return lista2
+        return returnList
 
     }
 
     fun returnAllJobsWhereStateMatches(string: String): MutableList<JobJson> {
 
-        val lista = jobrunrJobRepository.findJobrunrJobsByState(string)
-        val lista2: MutableList<JobJson> = mutableListOf()
+        val jobList = jobrunrJobRepository.findJobrunrJobsByState(string)
+        val returnList: MutableList<JobJson> = mutableListOf()
 
-        for ( a in lista ) {
-            lista2.add(deserialize(a.jobasjson!!))
+        for (job in jobList) {
+            returnList.add(deserialize(job.jobasjson!!))
         }
 
-        return lista2
+        return returnList
 
     }
 
-    fun returnAllJobsWhereClassMatches(string: String): MutableList<JobJson> {
+    fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int): JobDTO {
 
-        val lista: List<JobrunrJob> = jobrunrJobRepository.findJobrunrJobsByJobsignatureStartsWith(string)
-        val lista2: MutableList<JobJson> = mutableListOf()
+        val jobList: List<JobrunrJob> = jobrunrJobRepository.findJobsWhereClassMatches(state,value,PageRequest.of(offset,limit))
+        val returnList: MutableList<JobJson> = mutableListOf()
 
-        for ( a in lista ) {
+        for (job in jobList) {
 
-            lista2.add(deserialize(a.jobasjson!!))
+            returnList.add(deserialize(job.jobasjson!!))
         }
-        return lista2
+        val total = jobrunrJobRepository.countJobsWhereClassMatches(state, value)
+        val totalPages = (total-1) / limit + 1
+        val hasNext = offset<totalPages
+        val hasPrevious = offset>0
+
+        return JobDTO(
+            offset,
+            hasNext,
+            hasPrevious,
+            returnList,
+            limit,
+            offset,
+            total,
+            totalPages
+        )
+    }
+
+    fun returnAllJobsWhereClassOrMethodMatch(state: String,value: String, offset: Int, limit: Int): JobDTO {
+
+        val jobList = jobrunrJobRepository.findJobsByClassAndMethod(state,value, PageRequest.of(offset, limit))
+        val returnList: MutableList<JobJson> = mutableListOf()
+
+        for (job in jobList) {
+            returnList.add(deserialize(job.jobasjson!!))
+        }
+
+        val total = jobrunrJobRepository.countJobsByClassAndMethod(state, value)
+        val totalPages = (total-1) / limit + 1
+        val hasNext = offset<totalPages
+        val hasPrevious = offset>0
+
+        return JobDTO(
+            offset,
+            hasNext,
+            hasPrevious,
+            returnList,
+            limit,
+            offset,
+            total,
+            totalPages
+        )
 
     }
 
-    fun returnAllJobsWhereClassAndMethodMatch(string: String): MutableList<JobJson> {
+    fun returnAllJobsWhereMethodMatches(state: String, value: String, offset: Int, limit: Int): JobDTO {
 
-        val lista = jobrunrJobRepository.findJobrunrJobsByJobsignatureContains(string)
-        val lista2: MutableList<JobJson> = mutableListOf()
+        var regex = "^.+[A-Z].+\$" // i tu negde add value
+        val jobList = jobrunrJobRepository.findJobsWhereMethodMatches(state, regex, PageRequest.of(offset, limit))
+        val returnList: MutableList<JobJson> = mutableListOf()
 
-        for ( a in lista ) {
-            lista2.add(deserialize(a.jobasjson!!))
+        for (job in jobList) {
+            returnList.add(deserialize(job.jobasjson!!))
         }
 
-        return lista2
+        val total = jobrunrJobRepository.countJobsWhereMethodMatches(state, regex)
+        val totalPages = (total-1) / limit + 1
+        val hasNext = offset<totalPages
+        val hasPrevious = offset>0
 
+        return JobDTO(
+            offset,
+            hasNext,
+            hasPrevious,
+            returnList,
+            limit,
+            offset,
+            total,
+            totalPages
+        )
     }
 
     fun updateJobPackage(id: String, newClassName: String) {
@@ -111,28 +171,4 @@ class JobService {
 
         }
     }
-
-    fun searchByStateAndParam(state: String,offset: Int,limit: Int,order: String, value: String): MutableList<JobJson> {
-
-        val orderByList: List<String> = order.split(':')
-        val order: String = orderByList[0]
-        val direction: String = orderByList[1]
-
-        println(state)
-        println(offset)
-        println(limit)
-        println(order)
-        println(value)
-
-        return jobrunrJobRepository.searchByStateAndParam(state,offset,limit,value)
-
-
-
-    }
-
-//    fun returnWhereMethodMathesListOfJobDTO(string: String): List<JobDTO> {
-//
-//        return jobrunrJobRepository.returnAllJobsWithMatchingMethod(string)
-//    }
-
 }

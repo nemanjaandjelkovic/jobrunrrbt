@@ -1,5 +1,6 @@
 package rs.rbt.jobrunrrbt.helper
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.Column
 import jakarta.persistence.Id
 import rs.rbt.jobrunrrbt.model.JobJson

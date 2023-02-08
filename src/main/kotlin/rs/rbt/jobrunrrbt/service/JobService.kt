@@ -46,9 +46,13 @@ class JobService {
 
     }
 
-    fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int): JobDTO {
+    fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int): String {
 
-        val jobList: List<JobrunrJob> = jobrunrJobRepository.findJobsWhereClassMatches(state,value,PageRequest.of(offset,limit))
+        val leadingLetter = value[0]
+        val restOfValue = value.drop(1)
+        val regex = "^(.+[".plus(leadingLetter).plus("]").plus(".*").plus(restOfValue).plus(".*\\..*\\(.+)")
+        println(regex)
+        val jobList: List<JobrunrJob> = jobrunrJobRepository.findJobsWhereClassMatches(state,regex,PageRequest.of(offset,limit))
         val returnList: MutableList<JobJson> = mutableListOf()
 
         for (job in jobList) {
@@ -60,7 +64,7 @@ class JobService {
         val hasNext = offset<totalPages
         val hasPrevious = offset>0
 
-        return JobDTO(
+        return serialize( JobDTO(
             offset,
             hasNext,
             hasPrevious,
@@ -69,10 +73,10 @@ class JobService {
             offset,
             total,
             totalPages
-        )
+        ))
     }
 
-    fun returnAllJobsWhereClassOrMethodMatch(state: String,value: String, offset: Int, limit: Int): JobDTO {
+    fun returnAllJobsWhereClassOrMethodMatch(state: String,value: String, offset: Int, limit: Int): String {
 
         val jobList = jobrunrJobRepository.findJobsByClassAndMethod(state,value, PageRequest.of(offset, limit))
         val returnList: MutableList<JobJson> = mutableListOf()
@@ -86,7 +90,7 @@ class JobService {
         val hasNext = offset<totalPages
         val hasPrevious = offset>0
 
-        return JobDTO(
+        return serialize( JobDTO(
             offset,
             hasNext,
             hasPrevious,
@@ -95,13 +99,14 @@ class JobService {
             offset,
             total,
             totalPages
-        )
+        ))
 
     }
 
     fun returnAllJobsWhereMethodMatches(state: String, value: String, offset: Int, limit: Int): JobDTO {
 
-        var regex = "^.+[A-Z].+\$" // i tu negde add value
+        val regex = "^(.+[A-Z].+\\.".plus(value).plus(".*\\(.+)")
+        println(regex)
         val jobList = jobrunrJobRepository.findJobsWhereMethodMatches(state, regex, PageRequest.of(offset, limit))
         val returnList: MutableList<JobJson> = mutableListOf()
 
@@ -126,20 +131,32 @@ class JobService {
         )
     }
 
-    fun updateJobPackage(id: String, newClassName: String) {
+    fun updateJobWithTime(id: String, newPackageName: String, newMethodName: String,newClassName: String, newScheduledTime: String) {
 
         if (jobrunrJobRepository.existsById(id)) {
 
             val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(id)
             val jobJson: JobJson = deserialize(job.get().jobasjson!!)
-            val newJobSignature: String = newClassName.plus(".")
-                .plus(jobJson.jobDetails.methodName)
+            val newJobSignature: String = newPackageName
+                .plus('.')
+                .plus(newClassName)
+                .plus(".")
+                .plus(newMethodName)
                 .plus("(")
                 .plus(jobJson.jobDetails.jobParameters)
                 .plus(")")
 
-            jobJson.jobDetails.className = newClassName
+            val splitMethodName = newMethodName.split(".")
+            val splitLength = splitMethodName.size-1
+            val newStaticFieldName = newMethodName.dropLast(splitMethodName[splitLength].length+1)
+            val methodNameForJobDetails = splitMethodName[splitLength]
+
+            jobJson.jobDetails.className = newPackageName.plus(".").plus(newClassName)
+            jobJson.jobDetails.methodName = methodNameForJobDetails
+            jobJson.jobDetails.staticFieldName = newStaticFieldName
             jobJson.jobSignature = newJobSignature
+
+            //todo time edit fali
 
             val newJobJson: String = serialize(jobJson)
 
@@ -149,26 +166,35 @@ class JobService {
         }
     }
 
-    fun updateJobMethod(id: String, newMethodName: String) {
+    fun updateJob(id: String, newPackageName: String, newMethodName: String,newClassName: String) {
 
         if (jobrunrJobRepository.existsById(id)) {
 
             val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(id)
             val jobJson: JobJson = deserialize(job.get().jobasjson!!)
-            val newJobSignature: String = jobJson.jobDetails.className.plus(".")
+            val newJobSignature: String = newPackageName
+                .plus('.')
+                .plus(newClassName)
+                .plus(".")
                 .plus(newMethodName)
                 .plus("(")
                 .plus(jobJson.jobDetails.jobParameters)
                 .plus(")")
 
-            jobJson.jobDetails.methodName = newMethodName
+            val splitMethodName = newMethodName.split(".")
+            val splitLength = splitMethodName.size-1
+            val newStaticFieldName = newMethodName.dropLast(splitMethodName[splitLength].length+1)
+            val methodNameForJobDetails = splitMethodName[splitLength]
+
+            jobJson.jobDetails.className = newPackageName.plus(".").plus(newClassName)
+            jobJson.jobDetails.methodName = methodNameForJobDetails
+            jobJson.jobDetails.staticFieldName = newStaticFieldName
             jobJson.jobSignature = newJobSignature
 
             val newJobJson: String = serialize(jobJson)
 
-            jobrunrJobRepository.updateJobSignature(id, newJobSignature)
+            jobrunrJobRepository.updateJobSignature((id), newJobSignature)
             jobrunrJobRepository.updateJobAsJson(id, newJobJson)
 
         }
-    }
-}
+    }}

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*
 import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.model.JobJson
 import rs.rbt.jobrunrrbt.service.JobService
+import java.time.Instant
 
 
 @CrossOrigin("http://localhost:3000")
@@ -55,16 +56,24 @@ class JobController {
     }
 
     @Transactional
-    @PostMapping("/updateClass")
-    fun updateJobClass(@RequestParam(value = ID, required = true) id: String, @RequestParam(value = VALUE, required = true) value: String) {
+    @PostMapping("/update")
+    fun updateJob(
+        @RequestParam(value = ID, required = true) id: String,
+        @RequestParam(value = "packageName", required = true) packageName: String,
+        @RequestParam(value = "methodName", required = true) methodName: String,
+        @RequestParam(value = "className", required = true) className: String,
+        @RequestParam(value = "scheduledTime", defaultValue = "ne treba") scheduledTime: String// treba da bude Instant
+        ) {
 
-        jobService.updateJobPackage(id,value)
-    }
 
-    @Transactional
-    @PostMapping("/updateMethod")
-    fun updateJobMethod(@RequestParam(value = ID, required = true) id: String, @RequestParam(value = VALUE, required = true) value: String) {
+        when (scheduledTime) {
+            "ne treba" -> {
+                jobService.updateJob(id, packageName, methodName, className)
+            }
+            else -> {
+                jobService.updateJobWithTime(id, packageName, methodName, className, scheduledTime)
 
-        jobService.updateJobMethod(id,value)
+            }
+        }
     }
 }

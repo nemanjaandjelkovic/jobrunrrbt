@@ -21,20 +21,18 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
 
     fun findJobrunrJobsByJobsignatureStartsWith(string: String):List<JobrunrJob>
     @Query(
-        """select j from JobrunrJob j 
-        where j.state = ?1 and j.jobsignature like concat('%', '.', '%', ?2, '%', '.', '%', '(', '%')"""
+        """select * from jobrunr_jobs where state =?1 and jobsignature ~ ?2""", nativeQuery = true
     )
-    fun findJobsWhereClassMatches(state: String, value: String,pageable: Pageable):MutableList<JobrunrJob>
+    fun findJobsWhereClassMatches(state: String, regex: String,pageable: Pageable):MutableList<JobrunrJob>
     @Query(
-        """select * from jobrunr_jobs j where j.state =?1 and j.jobsignature ~ ?2""", nativeQuery = true
+        """select * from jobrunr_jobs where state =?1 and jobsignature ~ ?2""", nativeQuery = true
     )
     fun findJobsWhereMethodMatches(state: String,regex: String,pageable: Pageable):MutableList<JobrunrJob>
 
     @Query(
-        """select count(j) from JobrunrJob j 
-        where j.state = ?1 and j.jobsignature like concat('%', '.', '%', ?2, '%', '.', '%', '(', '%')"""
+        """select count (*) from jobrunr_jobs j where j.state =?1 and j.jobsignature ~ ?2""", nativeQuery = true
     )
-    fun countJobsWhereClassMatches(state: String, value: String):Int
+    fun countJobsWhereClassMatches(state: String, regex: String):Int
     @Query(
         """select count (*) from jobrunr_jobs j where j.state =?1 and j.jobsignature ~ ?2""", nativeQuery = true
     )
@@ -54,8 +52,5 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
     @Modifying
     @Query("update JobrunrJob set jobasjson = ?2 where id = ?1")
     fun updateJobAsJson(id: String, value: String)
-
-//    @Query(QUERY_ALL_TO_DTO_LIST_WHERE_METHOD_MATCHES)
-//    fun returnAllJobsWithMatchingMethod(string: String):List<JobrunrJob>
 
 }

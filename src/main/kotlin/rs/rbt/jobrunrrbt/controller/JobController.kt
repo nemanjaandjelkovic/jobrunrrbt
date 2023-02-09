@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import rs.rbt.jobrunrrbt.helper.*
-import rs.rbt.jobrunrrbt.model.JobJson
 import rs.rbt.jobrunrrbt.service.JobService
 import java.time.Instant
 
@@ -16,13 +15,6 @@ class JobController {
 
     @Autowired
     lateinit var jobService: JobService
-
-    @GetMapping("/all")
-    fun sendListOfJobDTO(): MutableList<JobJson?> {
-
-        return jobService.returnAllJobs()
-    }
-
     @GetMapping("/state")
     fun sendFilteredByState(
         @RequestParam(value = "state", required = true) state: String,
@@ -47,15 +39,15 @@ class JobController {
         when (parameter) {
 
             "Class" -> {
-                return jobService.returnAllJobsWhereClassMatches(state,value,offset,limit)
+                return jobService.returnAllJobsWhereClassMatches(state,value,offset,limit,order)
 
             }
             "Method" -> {
-                return jobService.returnAllJobsWhereMethodMatches(state,value,offset,limit)
+                return jobService.returnAllJobsWhereMethodMatches(state,value,offset,limit,order)
 
             }
             else -> {
-                return jobService.returnAllJobsWhereClassOrMethodMatch(state,value,offset,limit)
+                return jobService.returnAllJobsWhereClassOrMethodMatch(state,value,offset,limit,order)
             }
         }
     }
@@ -67,12 +59,12 @@ class JobController {
         @RequestParam(value = "packageName", required = true) packageName: String,
         @RequestParam(value = "methodName", required = true) methodName: String,
         @RequestParam(value = "className", required = true) className: String,
-        @RequestParam(value = "scheduledTime", defaultValue = "ne treba") scheduledTime: String// treba da bude Instant
+        @RequestParam(value = "scheduledTime", defaultValue = "ne treba") scheduledTime: Instant
         ) {
 
 
-        when (scheduledTime) {
-            "ne treba" -> {
+        when  {
+            (scheduledTime > Instant.now()) -> {
                 jobService.updateJob(id, packageName, methodName, className)
             }
             else -> {

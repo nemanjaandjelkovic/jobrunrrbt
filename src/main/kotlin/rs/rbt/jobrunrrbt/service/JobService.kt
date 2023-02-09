@@ -1,11 +1,8 @@
 package rs.rbt.jobrunrrbt.service
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.env.Environment
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.springframework.data.domain.Sort.Direction
-import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Service
 import rs.rbt.jobrunrrbt.helper.JobDTO
 import rs.rbt.jobrunrrbt.helper.deserialize
@@ -13,6 +10,7 @@ import rs.rbt.jobrunrrbt.helper.serialize
 import rs.rbt.jobrunrrbt.model.JobJson
 import rs.rbt.jobrunrrbt.model.JobrunrJob
 import rs.rbt.jobrunrrbt.repository.JobrunrJobRepository
+import java.time.Instant
 import java.util.*
 
 @Service
@@ -21,21 +19,13 @@ class JobService {
     @Autowired
     lateinit var jobrunrJobRepository: JobrunrJobRepository
 
-    fun returnAllJobs(): MutableList<JobJson?> {
-
-        val jobList: List<JobrunrJob> = jobrunrJobRepository.findAllJobs()
-        val returnList: MutableList<JobJson?> = mutableListOf()
-
-        for (job in jobList) {
-            returnList.add(deserialize(job.jobasjson!!))
-        }
-        return returnList
-
-    }
-
     fun returnAllJobsWhereStateMatches(state: String, offset: Int, limit: Int,order: String): String {
 
-        val jobList = jobrunrJobRepository.findJobrunrJobsByState(state,PageRequest.of(offset,limit))
+        val splitOrder = order.split(':')
+        val direction = Sort.Direction.valueOf(splitOrder[1])
+        val sort : Sort = Sort.by(direction,splitOrder[0])
+
+        val jobList = jobrunrJobRepository.findJobrunrJobsByState(state,PageRequest.of(offset,limit,sort))
         val returnList: MutableList<JobJson> = mutableListOf()
 
         for (job in jobList) {
@@ -59,13 +49,17 @@ class JobService {
         ))
     }
 
-    fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int): String {
+    fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int,order: String): String {
 
+        val splitOrder = order.split(':')
+        val direction = Sort.Direction.valueOf(splitOrder[1])
+        val sort : Sort = Sort.by(direction,splitOrder[0])
         val leadingLetter = value[0]
         val restOfValue = value.drop(1)
         val regex = "^(.+[".plus(leadingLetter).plus("]").plus(".*").plus(restOfValue).plus(".*\\..*\\(.+)")
         println(regex)
-        val jobList: List<JobrunrJob> = jobrunrJobRepository.findJobsWhereClassMatches(state,regex,PageRequest.of(offset,limit))
+
+        val jobList: List<JobrunrJob> = jobrunrJobRepository.findJobsWhereClassMatches(state,regex,PageRequest.of(offset,limit,sort))
         val returnList: MutableList<JobJson> = mutableListOf()
 
         for (job in jobList) {
@@ -89,9 +83,13 @@ class JobService {
         ))
     }
 
-    fun returnAllJobsWhereClassOrMethodMatch(state: String,value: String, offset: Int, limit: Int): String {
+    fun returnAllJobsWhereClassOrMethodMatch(state: String,value: String, offset: Int, limit: Int,order: String): String {
 
-        val jobList = jobrunrJobRepository.findJobsByClassAndMethod(state,value, PageRequest.of(offset, limit))
+        val splitOrder = order.split(':')
+        val direction = Sort.Direction.valueOf(splitOrder[1])
+        val sort : Sort = Sort.by(direction,splitOrder[0])
+
+        val jobList = jobrunrJobRepository.findJobsByClassAndMethod(state,value, PageRequest.of(offset, limit,sort))
         val returnList: MutableList<JobJson> = mutableListOf()
 
         for (job in jobList) {
@@ -116,11 +114,14 @@ class JobService {
 
     }
 
-    fun returnAllJobsWhereMethodMatches(state: String, value: String, offset: Int, limit: Int): JobDTO {
+    fun returnAllJobsWhereMethodMatches(state: String, value: String, offset: Int, limit: Int,order: String): JobDTO {
 
+        val splitOrder = order.split(':')
+        val direction = Sort.Direction.valueOf(splitOrder[1])
+        val sort : Sort = Sort.by(direction,splitOrder[0])
         val regex = "^(.+[A-Z].+\\.".plus(value).plus(".*\\(.+)")
-        println(regex)
-        val jobList = jobrunrJobRepository.findJobsWhereMethodMatches(state, regex, PageRequest.of(offset, limit))
+
+        val jobList = jobrunrJobRepository.findJobsWhereMethodMatches(state, regex, PageRequest.of(offset, limit,sort))
         val returnList: MutableList<JobJson> = mutableListOf()
 
         for (job in jobList) {
@@ -144,7 +145,10 @@ class JobService {
         )
     }
 
-    fun updateJobWithTime(id: String, newPackageName: String, newMethodName: String,newClassName: String, newScheduledTime: String) {
+    fun updateJobWithTime(
+        id: String, newPackageName: String, newMethodName: String,
+        newClassName: String, newScheduledTime: Instant
+    ) {
 
         if (jobrunrJobRepository.existsById(id)) {
 
@@ -169,12 +173,11 @@ class JobService {
             jobJson.jobDetails.staticFieldName = newStaticFieldName
             jobJson.jobSignature = newJobSignature
 
-            //todo time edit fali
-
             val newJobJson: String = serialize(jobJson)
 
             jobrunrJobRepository.updateJobSignature((id), newJobSignature)
             jobrunrJobRepository.updateJobAsJson(id, newJobJson)
+            jobrunrJobRepository.updateScheduledTime(id,newScheduledTime.toString())
 
         }
     }
@@ -210,4 +213,5 @@ class JobService {
             jobrunrJobRepository.updateJobAsJson(id, newJobJson)
 
         }
-    }}
+    }
+}

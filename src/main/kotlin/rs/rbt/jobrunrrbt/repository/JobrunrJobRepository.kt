@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.model.JobrunrJob
+import java.time.Instant
 import java.util.*
 
 interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
@@ -50,5 +51,9 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
     @Modifying
     @Query("update JobrunrJob set jobasjson = ?2 where id = ?1")
     fun updateJobAsJson(id: String, value: String)
+
+    @Modifying
+    @Query("update JobrunrJob set scheduledat = ?2 where id = ?1")
+    fun updateScheduledTime(id: String, value: String)
 
 }

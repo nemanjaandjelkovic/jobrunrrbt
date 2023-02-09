@@ -23,7 +23,7 @@ class JobService {
 
         val splitOrder = order.split(':')
         val direction = Sort.Direction.valueOf(splitOrder[1])
-        val sort : Sort = Sort.by(direction,splitOrder[0])
+        val sort : Sort = Sort.by(direction,splitOrder[0].lowercase())
 
         val jobList = jobrunrJobRepository.findJobrunrJobsByState(state,PageRequest.of(offset,limit,sort))
         val returnList: MutableList<JobJson> = mutableListOf()
@@ -53,7 +53,7 @@ class JobService {
 
         val splitOrder = order.split(':')
         val direction = Sort.Direction.valueOf(splitOrder[1])
-        val sort : Sort = Sort.by(direction,splitOrder[0])
+        val sort : Sort = Sort.by(direction,splitOrder[0].lowercase())
         val leadingLetter = value[0]
         val restOfValue = value.drop(1)
         val regex = "^(.+[".plus(leadingLetter).plus("]").plus(".*").plus(restOfValue).plus(".*\\..*\\(.+)")
@@ -87,7 +87,7 @@ class JobService {
 
         val splitOrder = order.split(':')
         val direction = Sort.Direction.valueOf(splitOrder[1])
-        val sort : Sort = Sort.by(direction,splitOrder[0])
+        val sort : Sort = Sort.by(direction,splitOrder[0].lowercase())
 
         val jobList = jobrunrJobRepository.findJobsByClassAndMethod(state,value, PageRequest.of(offset, limit,sort))
         val returnList: MutableList<JobJson> = mutableListOf()
@@ -118,7 +118,7 @@ class JobService {
 
         val splitOrder = order.split(':')
         val direction = Sort.Direction.valueOf(splitOrder[1])
-        val sort : Sort = Sort.by(direction,splitOrder[0])
+        val sort : Sort = Sort.by(direction,splitOrder[0].lowercase())
         val regex = "^(.+[A-Z].+\\.".plus(value).plus(".*\\(.+)")
 
         val jobList = jobrunrJobRepository.findJobsWhereMethodMatches(state, regex, PageRequest.of(offset, limit,sort))

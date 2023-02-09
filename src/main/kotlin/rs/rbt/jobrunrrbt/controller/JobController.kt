@@ -15,6 +15,7 @@ class JobController {
 
     @Autowired
     lateinit var jobService: JobService
+
     @GetMapping("/state")
     fun sendFilteredByState(
         @RequestParam(value = "state", required = true) state: String,
@@ -23,7 +24,7 @@ class JobController {
         @RequestParam(value = "order", required = true) order: String
     ): String {
 
-        return jobService.returnAllJobsWhereStateMatches(state, offset, limit,order)
+        return jobService.returnAllJobsWhereStateMatches(state, offset, limit, order)
     }
 
     @GetMapping("/search")
@@ -34,20 +35,22 @@ class JobController {
         @RequestParam(value = "order", required = true) order: String,
         @RequestParam(value = "searchParameter", required = true) parameter: String,
         @RequestParam(value = "searchValue", required = true) value: String,
-        ): Any {
+    ): Any {
 
         when (parameter) {
 
             "Class" -> {
-                return jobService.returnAllJobsWhereClassMatches(state,value,offset,limit,order)
+                return jobService.returnAllJobsWhereClassMatches(state, value, offset, limit, order)
 
             }
+
             "Method" -> {
-                return jobService.returnAllJobsWhereMethodMatches(state,value,offset,limit,order)
+                return jobService.returnAllJobsWhereMethodMatches(state, value, offset, limit, order)
 
             }
+
             else -> {
-                return jobService.returnAllJobsWhereClassOrMethodMatch(state,value,offset,limit,order)
+                return jobService.returnAllJobsWhereClassOrMethodMatch(state, value, offset, limit, order)
             }
         }
     }
@@ -59,14 +62,14 @@ class JobController {
         @RequestParam(value = "packageName", required = true) packageName: String,
         @RequestParam(value = "methodName", required = true) methodName: String,
         @RequestParam(value = "className", required = true) className: String,
-        @RequestParam(value = "scheduledTime", defaultValue = "ne treba") scheduledTime: Instant
-        ) {
+        @RequestParam(value = "scheduledTime", required = false) scheduledTime: Instant
+    ) {
 
-
-        when  {
-            (scheduledTime > Instant.now()) -> {
+        when (scheduledTime) {
+            (null) -> {
                 jobService.updateJob(id, packageName, methodName, className)
             }
+
             else -> {
                 jobService.updateJobWithTime(id, packageName, methodName, className, scheduledTime)
 

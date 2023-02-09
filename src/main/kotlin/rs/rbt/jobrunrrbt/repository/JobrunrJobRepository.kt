@@ -55,5 +55,4 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
     @Modifying
     @Query("update JobrunrJob set scheduledat = ?2 where id = ?1")
     fun updateScheduledTime(id: String, value: String)
-
 }

@@ -33,7 +33,7 @@ class JobService {
 
     }
 
-    fun returnAllJobsWhereStateMatches(state: String, offset: Int, limit: Int): MutableList<JobJson> {
+    fun returnAllJobsWhereStateMatches(state: String, offset: Int, limit: Int,order: String): String {
 
         val jobList = jobrunrJobRepository.findJobrunrJobsByState(state,PageRequest.of(offset,limit))
         val returnList: MutableList<JobJson> = mutableListOf()
@@ -42,8 +42,21 @@ class JobService {
             returnList.add(deserialize(job.jobasjson!!))
         }
 
-        return returnList
+        val total = jobList.size
+        val totalPages = (total-1) / limit + 1
+        val hasNext = offset<totalPages
+        val hasPrevious = offset>0
 
+        return serialize( JobDTO(
+            offset,
+            hasNext,
+            hasPrevious,
+            returnList,
+            limit,
+            offset,
+            total,
+            totalPages
+        ))
     }
 
     fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int): String {

@@ -28,10 +28,10 @@ class JobController {
         @RequestParam(value = "state", required = true) state: String,
         @RequestParam(value = "offset", required = true) offset: Int,
         @RequestParam(value = "limit", required = true) limit: Int,
-        //@RequestParam(value = "order", required = true) order: String
-    ): MutableList<JobJson> {
+        @RequestParam(value = "order", required = true) order: String
+    ): String {
 
-        return jobService.returnAllJobsWhereStateMatches(state, offset, limit)
+        return jobService.returnAllJobsWhereStateMatches(state, offset, limit,order)
     }
 
     @GetMapping("/search")

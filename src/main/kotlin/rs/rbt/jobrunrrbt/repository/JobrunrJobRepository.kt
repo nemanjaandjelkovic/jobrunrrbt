@@ -12,14 +12,12 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
 
     @Query("FROM JobrunrJob j")
     fun findAllJobs(): List<JobrunrJob>
-    fun findJobrunrJobsByState(state: String):List<JobrunrJob>
+    fun findJobrunrJobsByState(state: String,pageable: Pageable):List<JobrunrJob>
     @Query(
         """select j from JobrunrJob j 
         where j.state = ?1 and j.jobsignature like concat('%', ?2, '%', '(', '%')"""
     )
     fun findJobsByClassAndMethod(state:String,value: String,pageable: Pageable):List<JobrunrJob>
-
-    fun findJobrunrJobsByJobsignatureStartsWith(string: String):List<JobrunrJob>
     @Query(
         """select * from jobrunr_jobs where state =?1 and jobsignature ~ ?2""", nativeQuery = true
     )

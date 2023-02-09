@@ -13,6 +13,7 @@ class JobDTO (
     var currentPage: Int,
     var hasNext: Boolean,
     var hasPrevious: Boolean,
+    @JsonProperty("jobJson")
     var items: List<JobJson>,
     var limit: Int,
     var offset: Int,

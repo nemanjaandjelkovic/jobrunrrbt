@@ -24,9 +24,14 @@ class JobController {
     }
 
     @GetMapping("/state")
-    fun sendFilteredByState(@RequestParam(value = FILTER_PARAM, required = true) filterParam: String): MutableList<JobJson> {
+    fun sendFilteredByState(
+        @RequestParam(value = "state", required = true) state: String,
+        @RequestParam(value = "offset", required = true) offset: Int,
+        @RequestParam(value = "limit", required = true) limit: Int,
+        //@RequestParam(value = "order", required = true) order: String
+    ): MutableList<JobJson> {
 
-        return jobService.returnAllJobsWhereStateMatches(filterParam)
+        return jobService.returnAllJobsWhereStateMatches(state, offset, limit)
     }
 
     @GetMapping("/search")

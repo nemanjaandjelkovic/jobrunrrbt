@@ -33,9 +33,9 @@ class JobService {
 
     }
 
-    fun returnAllJobsWhereStateMatches(string: String): MutableList<JobJson> {
+    fun returnAllJobsWhereStateMatches(state: String, offset: Int, limit: Int): MutableList<JobJson> {
 
-        val jobList = jobrunrJobRepository.findJobrunrJobsByState(string)
+        val jobList = jobrunrJobRepository.findJobrunrJobsByState(state,PageRequest.of(offset,limit))
         val returnList: MutableList<JobJson> = mutableListOf()
 
         for (job in jobList) {

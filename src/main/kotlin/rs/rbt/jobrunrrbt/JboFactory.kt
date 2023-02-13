@@ -3,6 +3,7 @@ package rs.rbt.jobrunrrbt
 import jakarta.annotation.PostConstruct
 import org.jobrunr.scheduling.JobScheduler
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
 class JobFactory(private val scheduler: JobScheduler) {
@@ -12,6 +13,8 @@ class JobFactory(private val scheduler: JobScheduler) {
         scheduler.enqueue{
             println("Hello World")
         }
+        scheduler.enqueue{ print("dsadsa")}
+        scheduler.schedule(LocalDateTime.now().plusHours(1), {println("Andjelko pise")})
     }
 
 }

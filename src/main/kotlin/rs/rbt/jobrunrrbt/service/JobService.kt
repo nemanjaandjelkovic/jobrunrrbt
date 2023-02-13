@@ -173,7 +173,7 @@ class JobService {
             jobJson.jobDetails.methodName = methodNameForJobDetails
             jobJson.jobDetails.staticFieldName = newStaticFieldName
             jobJson.jobSignature = newJobSignature
-            jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt= newScheduledTime.toString()
+            jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt= newScheduledTime.minus(1, ChronoUnit.HOURS).toString()
             println( jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt)
             println(newScheduledTime.toString())
             println(Instant.parse(jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt).toString())

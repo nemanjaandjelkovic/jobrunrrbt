@@ -13,7 +13,7 @@ class JobJson (
     var labels: List<String?>,
     var jobDetails: JobDetails,
     var id: String,
-    var jobHistory: Any,
+    var jobHistory:  ArrayList<JobHistory> = arrayListOf(),
     var metadata: Any,
 
 )

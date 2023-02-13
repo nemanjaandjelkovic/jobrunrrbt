@@ -17,10 +17,10 @@ class JobHistory (
     var state: String,
     @DateTimeFormat(style = DATE_TIME_STYLE)
     @JsonFormat(pattern = DATE_TIME_STYLE)
-    var createdAt: Instant,
+    var createdAt: String,
     @DateTimeFormat(style = DATE_TIME_STYLE)
     @JsonFormat(pattern = DATE_TIME_STYLE)
-    var scheduledAt: Instant,
+    var scheduledAt: String?,
     var recurringJobId: String?,
     var reason: String?,
 

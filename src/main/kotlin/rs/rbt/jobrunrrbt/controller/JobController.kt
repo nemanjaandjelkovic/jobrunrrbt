@@ -22,7 +22,7 @@ class JobController {
         @RequestParam(value = "offset", required = true) offset: Int,
         @RequestParam(value = "limit", required = true) limit: Int,
         @RequestParam(value = "order", required = true) order: String
-    ): String {
+    ): JobDTO {
 
         return jobService.returnAllJobsWhereStateMatches(state, offset, limit, order)
     }
@@ -40,17 +40,17 @@ class JobController {
         when (parameter) {
 
             "Class" -> {
-                return jobService.returnAllJobsWhereClassMatches(state, value, offset, limit, order)
+                return jobService.returnAllJobsWhereClassMatches(state, value, offset/limit, limit, order)
 
             }
 
             "Method" -> {
-                return jobService.returnAllJobsWhereMethodMatches(state, value, offset, limit, order)
+                return jobService.returnAllJobsWhereMethodMatches(state, value, offset/limit, limit, order)
 
             }
 
             else -> {
-                return jobService.returnAllJobsWhereClassOrMethodMatch(state, value, offset, limit, order)
+                return jobService.returnAllJobsWhereClassOrMethodMatch(state, value, offset/limit, limit, order)
             }
         }
     }
@@ -62,14 +62,12 @@ class JobController {
         @RequestParam(value = "packageName", required = true) packageName: String,
         @RequestParam(value = "methodName", required = true) methodName: String,
         @RequestParam(value = "className", required = true) className: String,
-        @RequestParam(value = "scheduledTime", required = false) scheduledTime: Instant
+       @RequestParam(value = "scheduledTime", required = false) scheduledTime: Instant?
     ) {
-
         when (scheduledTime) {
             (null) -> {
                 jobService.updateJob(id, packageName, methodName, className)
             }
-
             else -> {
                 jobService.updateJobWithTime(id, packageName, methodName, className, scheduledTime)
 

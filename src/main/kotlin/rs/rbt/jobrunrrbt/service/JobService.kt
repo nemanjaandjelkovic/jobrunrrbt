@@ -11,6 +11,7 @@ import rs.rbt.jobrunrrbt.model.JobJson
 import rs.rbt.jobrunrrbt.model.JobrunrJob
 import rs.rbt.jobrunrrbt.repository.JobrunrJobRepository
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Service
@@ -19,7 +20,7 @@ class JobService {
     @Autowired
     lateinit var jobrunrJobRepository: JobrunrJobRepository
 
-    fun returnAllJobsWhereStateMatches(state: String, offset: Int, limit: Int,order: String): String {
+    fun returnAllJobsWhereStateMatches(state: String, offset: Int, limit: Int,order: String): JobDTO {
 
         val splitOrder = order.split(':')
         val direction = Sort.Direction.valueOf(splitOrder[1])
@@ -37,7 +38,7 @@ class JobService {
         val hasNext = offset<totalPages
         val hasPrevious = offset>0
 
-        return serialize( JobDTO(
+        return  JobDTO(
             offset,
             hasNext,
             hasPrevious,
@@ -46,10 +47,10 @@ class JobService {
             offset,
             total,
             totalPages
-        ))
+        )
     }
 
-    fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int,order: String): String {
+    fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int,order: String): JobDTO {
 
         val splitOrder = order.split(':')
         val direction = Sort.Direction.valueOf(splitOrder[1])
@@ -71,7 +72,7 @@ class JobService {
         val hasNext = offset<totalPages
         val hasPrevious = offset>0
 
-        return serialize( JobDTO(
+        return JobDTO(
             offset,
             hasNext,
             hasPrevious,
@@ -80,7 +81,7 @@ class JobService {
             offset,
             total,
             totalPages
-        ))
+        )
     }
 
     fun returnAllJobsWhereClassOrMethodMatch(state: String,value: String, offset: Int, limit: Int,order: String): String {
@@ -172,12 +173,17 @@ class JobService {
             jobJson.jobDetails.methodName = methodNameForJobDetails
             jobJson.jobDetails.staticFieldName = newStaticFieldName
             jobJson.jobSignature = newJobSignature
+            jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt= newScheduledTime.toString()
+            println( jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt)
+            println(newScheduledTime.toString())
+            println(Instant.parse(jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt).toString())
 
             val newJobJson: String = serialize(jobJson)
 
+
             jobrunrJobRepository.updateJobSignature((id), newJobSignature)
             jobrunrJobRepository.updateJobAsJson(id, newJobJson)
-            jobrunrJobRepository.updateScheduledTime(id,newScheduledTime.toString())
+            jobrunrJobRepository.updateScheduledTime(id,Instant.parse(jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt).minus(1, ChronoUnit.HOURS))
 
         }
     }

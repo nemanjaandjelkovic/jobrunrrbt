@@ -10,26 +10,51 @@ import java.time.Instant
 import java.util.*
 
 interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
-    fun findJobrunrJobsByState(state: String,pageable: Pageable):List<JobrunrJob>
-    @Query(FIND_JOBS_BY_CLASS_AND_METHOD)
-    fun findJobsByClassAndMethod(state:String,value: String,pageable: Pageable):List<JobrunrJob>
-    @Query(FIND_JOBS_BY_CLASS)
-    fun findJobsWhereClassMatches(state: String, regex: String,pageable: Pageable):MutableList<JobrunrJob>
-    @Query(FIND_JOBS_BY_METHOD)
-    fun findJobsWhereMethodMatches(state: String,regex: String,pageable: Pageable):MutableList<JobrunrJob>
-    @Query(COUNT_JOBS_BY_CLASS_AND_METHOD)
-    fun countJobsByClassAndMethod(state:String,value: String):Int
-    @Query(COUNT_JOBS_BY_CLASS)
-    fun countJobsWhereClassMatches(state: String, regex: String):Int
-    @Query(COUNT_JOBS_BY_METHOD)
-    fun countJobsWhereMethodMatches(state: String,regex: String):Int
+
+    fun findJobrunrJobsByState(state: String, pageable: Pageable): List<JobrunrJob>
+
+    @Query(
+        """select j from JobrunrJob j 
+        where j.state = ?1 and j.jobsignature like concat('%', ?2, '%', '(', '%')"""
+    )
+    fun findJobsByClassAndMethod(state: String, value: String, pageable: Pageable): List<JobrunrJob>
+
+    @Query(
+        """select * from jobrunr_jobs where state =?1 and jobsignature ~ ?2""", nativeQuery = true
+    )
+    fun findJobsWhereClassMatches(state: String, regex: String, pageable: Pageable): MutableList<JobrunrJob>
+
+    @Query(
+        """select * from jobrunr_jobs where state =?1 and jobsignature ~ ?2""", nativeQuery = true
+    )
+    fun findJobsWhereMethodMatches(state: String, regex: String, pageable: Pageable): MutableList<JobrunrJob>
+
+    @Query(
+        """select count (*) from jobrunr_jobs j where j.state =?1 and j.jobsignature ~ ?2""", nativeQuery = true
+    )
+    fun countJobsWhereClassMatches(state: String, regex: String): Int
+
+    @Query(
+        """select count (*) from jobrunr_jobs j where j.state =?1 and j.jobsignature ~ ?2""", nativeQuery = true
+    )
+    fun countJobsWhereMethodMatches(state: String, regex: String): Int
+
+    @Query(
+        """select count(j) from JobrunrJob j 
+        where j.state = ?1 and j.jobsignature like concat('%', ?2, '%', '(', '%')"""
+    )
+    fun countJobsByClassAndMethod(state: String, value: String): Int
+
+
     @Modifying
-    @Query(UPDATE_SIGNATURE)
+    @Query("update JobrunrJob set jobsignature = ?2 where id = ?1")
     fun updateJobSignature(id: String, value: String)
+
     @Modifying
-    @Query(UPDATE_JOBASJSON)
+    @Query("update JobrunrJob set jobasjson = ?2 where id = ?1")
     fun updateJobAsJson(id: String, value: String)
+
     @Modifying
-    @Query(UPDATE_SCHEDULED_TIME)
+    @Query("update JobrunrJob set scheduledat = ?2 where id = ?1")
     fun updateScheduledTime(id: String, value: Instant)
 }

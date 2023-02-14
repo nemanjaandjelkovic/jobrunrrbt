@@ -3,6 +3,7 @@ package rs.rbt.jobrunrrbt.controller
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
+import rs.rbt.jobrunrrbt.dto.JobDTO
 import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.service.JobService
 import java.time.Instant
@@ -38,15 +39,12 @@ class JobController {
     ): Any {
 
         when (parameter) {
-
             CLASS -> {
                 return jobService.returnAllJobsWhereClassMatches(state, value, offset/limit, limit, order)
-
             }
 
             METHOD -> {
                 return jobService.returnAllJobsWhereMethodMatches(state, value, offset/limit, limit, order)
-
             }
 
             else -> {

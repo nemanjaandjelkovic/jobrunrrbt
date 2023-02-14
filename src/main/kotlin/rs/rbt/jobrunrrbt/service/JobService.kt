@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import rs.rbt.jobrunrrbt.helper.JobDTO
+import rs.rbt.jobrunrrbt.dto.JobDTO
 import rs.rbt.jobrunrrbt.helper.deserialize
 import rs.rbt.jobrunrrbt.helper.serialize
 import rs.rbt.jobrunrrbt.model.JobJson
@@ -111,7 +111,8 @@ class JobService {
             offset,
             total,
             totalPages
-        ))
+        )
+        )
 
     }
 

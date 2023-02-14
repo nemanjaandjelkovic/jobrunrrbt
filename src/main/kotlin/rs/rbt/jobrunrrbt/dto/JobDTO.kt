@@ -1,4 +1,4 @@
-package rs.rbt.jobrunrrbt.helper
+package rs.rbt.jobrunrrbt.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.Column

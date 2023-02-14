@@ -29,6 +29,7 @@ import SucceededNotification from "./notifications/succeeded-notification";
 import DeletedNotification from "./notifications/deleted-notification";
 import JobDetailsNotCacheableNotification from "./notifications/job-details-not-cacheable-notification";
 import VersionFooter from "../utils/version-footer";
+import EditJob from "../custom/editJob";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -185,14 +186,14 @@ const JobView = (props) => {
                                         <Grid item xs={6} container className={classes.jobDetails} justify="flex-end">
                                             <ButtonGroup>
                                                 {stateBreadcrumb.state !== 'ENQUEUED' &&
-                                                <Button variant="outlined" color="primary" onClick={requeueJob}>
-                                                    Requeue
-                                                </Button>
+                                                    <Button variant="outlined" color="primary" onClick={requeueJob}>
+                                                        Requeue
+                                                    </Button>
                                                 }
                                                 {stateBreadcrumb.state !== 'DELETED' &&
-                                                <Button variant="outlined" color="primary" onClick={deleteJob}>
-                                                    Delete
-                                                </Button>
+                                                    <Button variant="outlined" color="primary" onClick={deleteJob}>
+                                                        Delete
+                                                    </Button>
                                                 }
                                             </ButtonGroup>
                                         </Grid>
@@ -213,6 +214,11 @@ const JobView = (props) => {
                             {stateBreadcrumb.state === 'SUCCEEDED' && <SucceededNotification job={job}/>}
                             {stateBreadcrumb.state === 'DELETED' && <DeletedNotification job={job}/>}
 
+                            <Grid item xs={12}>
+                                <EditJob jobInfo={job} state={stateBreadcrumb.state}>
+                                </EditJob>
+                            </Grid>
+                            
                             <Grid item xs={12}>
                                 <Typography variant="h5" component="h2">
                                     History&nbsp;
@@ -251,11 +257,11 @@ const JobView = (props) => {
                             </Grid>
                         </Grid>
                         {apiStatus &&
-                        <Snackbar open={true} autoHideDuration={3000} onClose={handleCloseAlert}>
-                            <Alert severity={apiStatus.severity}>
-                                {apiStatus.message}
-                            </Alert>
-                        </Snackbar>
+                            <Snackbar open={true} autoHideDuration={3000} onClose={handleCloseAlert}>
+                                <Alert severity={apiStatus.severity}>
+                                    {apiStatus.message}
+                                </Alert>
+                            </Snackbar>
                         }
                     </>
                 }

@@ -10,11 +10,21 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=JobRunrRBT
-  jobrnr-service:
-    image: 'jobrnr'
-    container_name: jobrnr
+  jobrunr-service:
+    image: 'jobrunr'
+    container_name: jobrunr
     build: ./
     depends_on:
       - db
     ports:
       - "8000:8000"
+  jobrunr-dashboard:
+    image: 'dashboard'
+    container_name: dashboard
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"

@@ -25,7 +25,6 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation ("org.jobrunr:jobrunr-spring-boot-starter:5.3.3")
 	implementation ("org.jobrunr:jobrunr:6.0.0-M0")
-	//implementation ("com.fasterxml.jackson.core:jackson-databind:2.11.0")
 	implementation("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 

@@ -64,9 +64,9 @@ class JobService {
         val returnList: MutableList<JobJson> = mutableListOf()
 
         for (job in jobList) {
-
             returnList.add(deserialize(job.jobasjson!!))
         }
+
         val total = jobrunrJobRepository.countJobsWhereClassMatches(state, value)
         val totalPages = (total-1) / limit + 1
         val hasNext = offset<totalPages
@@ -146,8 +146,7 @@ class JobService {
         )
     }
 
-    fun updateJobWithTime(
-        id: String, newPackageName: String, newMethodName: String,
+    fun updateJobWithTime(id: String, newPackageName: String, newMethodName: String,
         newClassName: String, newScheduledTime: Instant
     ) {
 
@@ -174,9 +173,6 @@ class JobService {
             jobJson.jobDetails.staticFieldName = newStaticFieldName
             jobJson.jobSignature = newJobSignature
             jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt= newScheduledTime.minus(1, ChronoUnit.HOURS).toString()
-            println( jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt)
-            println(newScheduledTime.toString())
-            println(Instant.parse(jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt).toString())
 
             val newJobJson: String = serialize(jobJson)
 

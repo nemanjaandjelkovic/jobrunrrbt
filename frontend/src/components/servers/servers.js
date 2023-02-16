@@ -11,7 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import TimeAgo from "react-timeago/lib";
 import Box from "@material-ui/core/Box";
 import {makeStyles} from '@material-ui/core/styles';
-import {CogClockwise} from "mdi-material-ui";
+import {CogClockwise, Pause, Play} from "mdi-material-ui";
 import NotInterestedIcon from '@material-ui/icons/NotInterested';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -96,7 +96,6 @@ const Servers = React.memo(() => {
     const sortServers = (servers) => {
         return [...servers].sort((a, b) => a.firstHeartbeat > b.firstHeartbeat);
     }
-
     return (
         <div>
             <Box my={3}>

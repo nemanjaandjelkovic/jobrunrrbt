@@ -2,12 +2,20 @@ import React from 'react';
 import {Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import statsState from "../../StatsStateContext";
+import Grid from "@material-ui/core/Grid";
+import Logo from '../../assets/rbt-logo-full.png';
+
 
 const useStyles = makeStyles(theme => ({
     footer: {
         paddingTop: '1rem',
         width: '100%',
         display: 'inline-block'
+    },
+    img: {
+        width: '180px',
+        height: '120px',
+        marginTop: '10px'
     }
 }));
 
@@ -15,7 +23,12 @@ export default function VersionFooter() {
 
     const classes = useStyles();
     const stats = statsState.getStats();
-    const [jobRunrInfo, setJobRunrInfo] = React.useState({version: '0.0.0-SNAPSHOT', allowAnonymousDataUsage: false, clusterId: undefined, storageProviderType: undefined});
+    const [jobRunrInfo, setJobRunrInfo] = React.useState({
+        version: '0.0.0-SNAPSHOT',
+        allowAnonymousDataUsage: false,
+        clusterId: undefined,
+        storageProviderType: undefined
+    });
 
     React.useEffect(() => {
         fetch(`/api/version`)
@@ -25,9 +38,9 @@ export default function VersionFooter() {
     }, []);
 
     React.useEffect(() => {
-        if(jobRunrInfo.allowAnonymousDataUsage && stats.backgroundJobServers) {
+        if (jobRunrInfo.allowAnonymousDataUsage && stats.backgroundJobServers) {
             const anonymousUsageDataSent = localStorage.getItem('anonymousUsageDataSent');
-            if(!anonymousUsageDataSent || Math.abs(new Date() - Date.parse(anonymousUsageDataSent)) > (1000 * 60 * 60 * 4)) {
+            if (!anonymousUsageDataSent || Math.abs(new Date() - Date.parse(anonymousUsageDataSent)) > (1000 * 60 * 60 * 4)) {
                 let url = `https://api.jobrunr.io/api/analytics/jobrunr/report`;
                 url += `?clusterId=${jobRunrInfo.clusterId}&currentVersion=${jobRunrInfo.version}&storageProviderType=${jobRunrInfo.storageProviderType}`;
                 url += `&amountOfBackgroundJobServers=${stats.backgroundJobServers}&succeededJobCount=${(stats.succeeded + stats.allTimeSucceeded)}`;
@@ -44,10 +57,23 @@ export default function VersionFooter() {
     return (
         <>
             <Typography align="center" className={classes.footer} variant="caption">
-                Processed {(stats.succeeded + stats.allTimeSucceeded)} jobs with <span style={{color: 'red'}}>♥</span> using
-                JobRunr {jobRunrInfo.version}.<br />
-                Support open-source development and <a href="https://www.jobrunr.io/en/about/#eco-friendly-software" target="_blank" rel="noreferrer">our planet</a> by purchasing a <a href="https://www.jobrunr.io/en/pricing/" target="_blank" rel="noreferrer">JobRunr Pro</a> license.
+                Processed {(stats.succeeded + stats.allTimeSucceeded)} jobs with <span
+                style={{color: 'red'}}>♥</span> using
+                JobRunr {jobRunrInfo.version}.<br/>
+                Dashboard was modified by Nemanja and Nenad
             </Typography>
+            <Grid
+                container
+                direction="column"
+                alignItems="center"
+            >
+                <Grid item>
+                    <img src={Logo} alt={"rbt-logo"} className={classes.img}/>
+                </Grid>
+
+            </Grid>
+
+
         </>
     )
 }

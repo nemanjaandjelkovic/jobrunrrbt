@@ -6,7 +6,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import rs.rbt.jobrunrrbt.helper.*
 import java.time.Instant
-import java.util.*
 
 @Entity
 @Table(name = JOBRUNR_JOBS_TABLE_NAME)

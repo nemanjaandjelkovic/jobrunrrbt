@@ -21,7 +21,7 @@ export default function EditJob(props) {
 
     function updateJobWithTime(e) {
         classNameWithFirstCharUpper = className.current.value.charAt(0).toUpperCase() + className.current.value.slice(1).toLowerCase()
-        axios.post("http://localhost:8000/api/update", null, {
+        axios.post("http://localhost:8080/api/update", null, {
             params: {
                 id: props.jobInfo.id,
                 packageName: packetName.current.value,
@@ -35,7 +35,7 @@ export default function EditJob(props) {
 
     function updateJobWithOutTime(e) {
         classNameWithFirstCharUpper = className.current.value.charAt(0).toUpperCase() + className.current.value.slice(1).toLowerCase()
-        axios.post("http://localhost:8000/api/update", null, {
+        axios.post("http://localhost:8080/api/update", null, {
             params: {
                 id: props.jobInfo.id,
                 packageName: packetName.current.value,

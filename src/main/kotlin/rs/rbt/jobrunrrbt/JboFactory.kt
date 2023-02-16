@@ -9,12 +9,11 @@ import java.time.LocalDateTime
 class JobFactory(private val scheduler: JobScheduler) {
 
     @PostConstruct
-    fun schedule(){
-        scheduler.enqueue{
+    fun schedule() {
+        scheduler.enqueue {
             println("Hello World")
         }
-        scheduler.enqueue{ print("dsadsa")}
-        scheduler.schedule(LocalDateTime.now().plusHours(1), {println("Andjelko pise")})
+        scheduler.schedule(LocalDateTime.now().plusHours(1), { println("Input text") })
     }
 
 }

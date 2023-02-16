@@ -26,5 +26,6 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
+      - jobrunr-service
     ports:
       - "3000:3000"

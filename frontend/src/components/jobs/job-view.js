@@ -185,12 +185,13 @@ const JobView = (props) => {
                                         </Grid>
                                         <Grid item xs={6} container className={classes.jobDetails} justify="flex-end">
                                             <ButtonGroup>
-                                                {stateBreadcrumb.state !== 'ENQUEUED' &&
+                                                {stateBreadcrumb.state !== 'ENQUEUED' && stateBreadcrumb.state !== "DELETED" && stateBreadcrumb.state !== "SUCCEEDED" && stateBreadcrumb.state!== "SCHEDULED" &&
                                                     <Button variant="outlined" color="primary" onClick={requeueJob}>
                                                         Requeue
                                                     </Button>
                                                 }
-                                                {stateBreadcrumb.state !== 'DELETED' &&
+
+                                                    {stateBreadcrumb.state !== 'DELETED' &&
                                                     <Button variant="outlined" color="primary" onClick={deleteJob}>
                                                         Delete
                                                     </Button>
@@ -214,10 +215,12 @@ const JobView = (props) => {
                             {stateBreadcrumb.state === 'SUCCEEDED' && <SucceededNotification job={job}/>}
                             {stateBreadcrumb.state === 'DELETED' && <DeletedNotification job={job}/>}
 
+                            {stateBreadcrumb.state !== 'DELETED' &&
                             <Grid item xs={12}>
                                 <EditJob jobInfo={job} state={stateBreadcrumb.state}>
                                 </EditJob>
                             </Grid>
+                            }
                             
                             <Grid item xs={12}>
                                 <Typography variant="h5" component="h2">

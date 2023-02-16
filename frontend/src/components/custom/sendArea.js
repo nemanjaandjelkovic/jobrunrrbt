@@ -29,14 +29,15 @@ export default function FormDialog({isDialogOpened, handleCloseDialog}) {
 
 
     return (<div>
-            <Dialog open={isDialogOpened} onClose={handleClose} fullScreen={fullScreen} style={{padding: "10%"}}>
+            <Dialog open={isDialogOpened} onClose={handleClose} fullScreen={true} style={{padding: "5%"}}>
                 <DialogTitle>Input Id list for requeue</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
                         margin="dense"
                         id="name"
-                        label="Please enter list of id jobs in format : id/id/id..."
+                        label="Please enter list of id jobs"
+                        placeholder={"id/id/id"}
                         type="text"
                         fullWidth
                         variant="standard"

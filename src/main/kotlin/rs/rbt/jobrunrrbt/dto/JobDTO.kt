@@ -1,15 +1,8 @@
 package rs.rbt.jobrunrrbt.dto
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import jakarta.persistence.Column
-import jakarta.persistence.Id
 import rs.rbt.jobrunrrbt.model.JobJson
-import java.time.Instant
-import java.time.LocalDateTime
-import java.util.*
 
-class JobDTO (
-
+class JobDTO(
     var currentPage: Int,
     var hasNext: Boolean,
     var hasPrevious: Boolean,

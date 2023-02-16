@@ -6,5 +6,4 @@ class JobDetails (
     var methodName: String,
     var jobParameters: List<JobParameters>,
     var cacheable: Boolean,
-
 )

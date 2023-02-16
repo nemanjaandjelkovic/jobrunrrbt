@@ -3,8 +3,7 @@ package rs.rbt.jobrunrrbt.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-class JobJson (
-
+class JobJson(
     var version: Long,
     var jobSignature: String,
     var jobName: String,
@@ -14,5 +13,4 @@ class JobJson (
     var id: String,
     var jobHistory: ArrayList<JobHistory> = arrayListOf(),
     var metadata: Any,
-
 )

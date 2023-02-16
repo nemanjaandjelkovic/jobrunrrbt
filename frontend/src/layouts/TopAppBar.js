@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import {Link as RouterLink} from 'react-router-dom';
 import statsState from "StatsStateContext.js";
-import logo from '../assets/jobrunr-logo-white.png';
+import logo from '../assets/rbt-logo.png';
 
 const useStyles = makeStyles(theme => ({
     root: {

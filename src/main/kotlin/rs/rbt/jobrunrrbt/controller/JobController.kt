@@ -24,7 +24,6 @@ class JobController {
         @RequestParam(value = LIMIT, required = true) limit: Int,
         @RequestParam(value = ORDER, required = true) order: String
     ): JobDTO {
-
         return jobService.returnAllJobsWhereStateMatches(state, offset, limit, order)
     }
 
@@ -37,18 +36,17 @@ class JobController {
         @RequestParam(value = SEARCH_PARAMETER, required = true) parameter: String,
         @RequestParam(value = SEARCH_VALUE, required = true) value: String,
     ): Any {
-
         when (parameter) {
             CLASS -> {
-                return jobService.returnAllJobsWhereClassMatches(state, value, offset/limit, limit, order)
+                return jobService.returnAllJobsWhereClassMatches(state, value, offset / limit, limit, order)
             }
 
             METHOD -> {
-                return jobService.returnAllJobsWhereMethodMatches(state, value, offset/limit, limit, order)
+                return jobService.returnAllJobsWhereMethodMatches(state, value, offset / limit, limit, order)
             }
 
             else -> {
-                return jobService.returnAllJobsWhereClassOrMethodMatch(state, value, offset/limit, limit, order)
+                return jobService.returnAllJobsWhereClassOrMethodMatch(state, value, offset / limit, limit, order)
             }
         }
     }
@@ -60,7 +58,7 @@ class JobController {
         @RequestParam(value = PACKAGE_NAME, required = true) packageName: String,
         @RequestParam(value = METHOD_NAME, required = true) methodName: String,
         @RequestParam(value = CLASS_NAME, required = true) className: String,
-       @RequestParam(value = SCHEDULED_TIME, required = false) scheduledTime: Instant?
+        @RequestParam(value = SCHEDULED_TIME, required = false) scheduledTime: Instant?
     ) {
         when (scheduledTime) {
             (null) -> {

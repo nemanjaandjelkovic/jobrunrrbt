@@ -75,7 +75,7 @@ const JobsView = (props) => {
         if(parameter==="class"){
              searchValue = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
         }
-        axios.get("http://localhost:8000/api/search", {
+        axios.get("http://localhost:8080/api/search", {
             params: {
                 searchParameter: parameter,
                 searchValue: searchValue,
@@ -97,7 +97,7 @@ const JobsView = (props) => {
         setIsLoading(true);
         const offset = (page) * 20;
         const limit = 20;
-        axios.get("http://localhost:8000/api/state", {
+        axios.get("http://localhost:8080/api/state", {
             params: {
                 state: jobState.toUpperCase(),
                 offset: offset,

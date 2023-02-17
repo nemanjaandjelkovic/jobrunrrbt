@@ -1,6 +1,7 @@
 package rs.rbt.jobrunrrbt
 
 import jakarta.annotation.PostConstruct
+import org.jobrunr.jobs.annotations.Job
 import org.jobrunr.scheduling.JobScheduler
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime

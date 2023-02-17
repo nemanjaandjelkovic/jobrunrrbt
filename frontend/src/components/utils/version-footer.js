@@ -2,8 +2,6 @@ import React from 'react';
 import {Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import statsState from "../../StatsStateContext";
-import Grid from "@material-ui/core/Grid";
-import Logo from '../../assets/rbt-logo-full.png';
 
 
 const useStyles = makeStyles(theme => ({
@@ -62,17 +60,6 @@ export default function VersionFooter() {
                 JobRunr {jobRunrInfo.version}.<br/>
                 Dashboard was modified by Nemanja and Nenad
             </Typography>
-            <Grid
-                container
-                direction="column"
-                alignItems="center"
-            >
-                <Grid item>
-                    <img src={Logo} alt={"rbt-logo"} className={classes.img}/>
-                </Grid>
-
-            </Grid>
-
 
         </>
     )

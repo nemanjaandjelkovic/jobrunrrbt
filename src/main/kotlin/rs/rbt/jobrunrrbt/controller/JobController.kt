@@ -36,17 +36,15 @@ class JobController {
         @RequestParam(value = SEARCH_PARAMETER, required = true) parameter: String,
         @RequestParam(value = SEARCH_VALUE, required = true) value: String,
     ): Any {
-        when (parameter) {
+        return when (parameter) {
             CLASS -> {
-                return jobService.returnAllJobsWhereClassMatches(state, value, offset / limit, limit, order)
+                jobService.returnAllJobsWhereClassMatches(state, value, offset / limit, limit, order)
             }
-
             METHOD -> {
-                return jobService.returnAllJobsWhereMethodMatches(state, value, offset / limit, limit, order)
+                jobService.returnAllJobsWhereMethodMatches(state, value, offset / limit, limit, order)
             }
-
             else -> {
-                return jobService.returnAllJobsWhereClassOrMethodMatch(state, value, offset / limit, limit, order)
+                jobService.returnAllJobsWhereClassOrMethodMatch(state, value, offset / limit, limit, order)
             }
         }
     }

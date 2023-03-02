@@ -17,24 +17,24 @@ open class JobrunrJob {
     @Column(name = VERSION, nullable = false)
     open var version: Int? = null
 
-    @Column(name = JOBASJSON, nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = JOB_AS_JSON, nullable = false, length = Integer.MAX_VALUE)
     open var jobasjson: String? = null
 
-    @Column(name = JOBSIGNATURE, nullable = false, length = 512)
+    @Column(name = JOB_SIGNATURE, nullable = false, length = 512)
     open var jobsignature: String? = null
 
     @Column(name = STATE, nullable = false, length = 36)
     open var state: String? = null
 
-    @Column(name = CREATEDAT, nullable = false)
+    @Column(name = CREATED_AT, nullable = false)
     open var createdat: Instant? = null
 
-    @Column(name = UPDATEDAT, nullable = false)
+    @Column(name = UPDATED_AT, nullable = false)
     open var updatedat: Instant? = null
 
-    @Column(name = SCHEDULETAT)
+    @Column(name = SCHEDULED_AT)
     open var scheduledat: Instant? = null
 
-    @Column(name = RECCURINGJOBID, length = 128)
+    @Column(name = RECURRING_JOB_ID, length = 128)
     open var recurringjobid: Any? = null
 }

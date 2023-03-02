@@ -16,9 +16,9 @@ open class JobrunrRecurringJob {
     @Column(name = VERSION, nullable = false)
     open var version: Int? = null
 
-    @Column(name = JOBASJSON, nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = JOB_AS_JSON, nullable = false, length = Integer.MAX_VALUE)
     open var jobasjson: String? = null
 
-    @Column(name = CREATEDAT, nullable = false)
+    @Column(name = CREATED_AT, nullable = false)
     open var createdat: Long? = null
 }

@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat
 import rs.rbt.jobrunrrbt.helper.AT_CLASS
 import rs.rbt.jobrunrrbt.helper.DATE_TIME_STYLE
 
+/**  `JobHistory` is a class that represents a job history record */
 @JsonIgnoreProperties(ignoreUnknown = true)
 class JobHistory (
     @JsonProperty(AT_CLASS)

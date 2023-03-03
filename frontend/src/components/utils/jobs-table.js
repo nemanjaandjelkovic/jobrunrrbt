@@ -23,7 +23,6 @@ import axios from "axios";
 const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
-        //maxWidth: 360,
         backgroundColor: theme.palette.background.paper,
     },
     content: {
@@ -83,7 +82,6 @@ const JobsTable = (props) => {
             column = "Deleted";
             break;
         default:
-        // code block
     }
 
     const [isCheckAll, setIsCheckAll] = useState(false);
@@ -92,7 +90,7 @@ const JobsTable = (props) => {
 
     useEffect(() => {
         setList(jobPage.items);
-    }, [list]);
+    }, [list,jobPage.items]);
 
     const handleSelectAll = e => {
         setIsCheckAll(!isCheckAll);
@@ -157,7 +155,6 @@ const JobsTable = (props) => {
     ) => {
         setRowsPerPage(parseInt(event.target.value));
         jobPage.limit = parseInt(event.target.value);
-        // jobPage.totalPages=Math.round(jobPage.total/jobPage.limit)
         setPage(0)
     };
 

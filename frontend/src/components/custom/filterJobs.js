@@ -18,7 +18,7 @@ export default function FilterJobs(props) {
             props.data(searchParameter, searchValue)
         }, 1000)
         return () => clearTimeout(delayDebounceFn)
-    }, [searchValue])
+    }, [searchValue, searchParameter])
 
     function parameterChange(event) {
         setParameter(event.target.value);
@@ -40,7 +40,6 @@ export default function FilterJobs(props) {
                     ref={textFieldRef}
                     helperText={"Please enter " + searchParameter + " name"}
                 />
-
             </FormControl>
             <FormControl variant="standard" style={{width: "200px", marginLeft: "5px"}}>
                 <InputLabel id="demo-simple-select-standard-label">Select parameter</InputLabel>
@@ -58,8 +57,6 @@ export default function FilterJobs(props) {
                     <MenuItem value={"method"}>Method</MenuItem>
                 </Select>
             </FormControl>
-
-
         </div>
     );
 };

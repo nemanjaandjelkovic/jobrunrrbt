@@ -6,6 +6,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import rs.rbt.jobrunrrbt.helper.*
 
+/** A Kotlin class that is mapped to a table in the database. */
 @Entity
 @Table(name = JOBRUNR_RECURRING_JOBS_TABLE_NAME)
 open class JobrunrRecurringJob {

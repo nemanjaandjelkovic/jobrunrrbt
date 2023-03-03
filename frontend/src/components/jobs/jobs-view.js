@@ -71,9 +71,9 @@ const JobsView = (props) => {
         setIsLoading(false);
         const offset = (page) * 20;
         const limit = 20;
-       let searchValue=value
-        if(parameter==="class"){
-             searchValue = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
+        let searchValue = value
+        if (parameter === "class") {
+            searchValue = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
         }
         axios.get("http://localhost:8080/api/search", {
             params: {
@@ -86,9 +86,10 @@ const JobsView = (props) => {
             }
         })
             .then(
-                response => (response.status,
-                    setJobPage(response),
-                    setIsLoading(false))
+                response => {
+                    setJobPage(response)
+                    setIsLoading(false)
+                }
             )
             .catch(err => console.warn(err));
     }
@@ -106,9 +107,10 @@ const JobsView = (props) => {
             }
         })
             .then(
-                response => (
-                    setJobPage(response),
-                        setIsLoading(false))
+                response => {
+                    setJobPage(response)
+                    setIsLoading(false)
+                }
             )
             .catch(err => console.warn(err));
     }, [page, jobState, sort, history.location.key]);

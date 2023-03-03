@@ -3,6 +3,8 @@ package rs.rbt.jobrunrrbt.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import rs.rbt.jobrunrrbt.helper.OBJECT
 
+/**  The JobParameters class is a data class that holds the class name, the actual class name, and the
+job object. */
 class JobParameters(
     var className: String,
     var actualClassName: String,

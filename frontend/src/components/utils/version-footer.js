@@ -49,7 +49,6 @@ export default function VersionFooter() {
                 localStorage.setItem('anonymousUsageDataSent', new Date().toISOString());
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [jobRunrInfo]);
 
     return (
@@ -58,7 +57,6 @@ export default function VersionFooter() {
                 Processed {(stats.succeeded + stats.allTimeSucceeded)} jobs with <span
                 style={{color: 'red'}}>♥</span> using
                 JobRunr {jobRunrInfo.version}.<br/>
-                Dashboard was modified by Nemanja and Nenad
             </Typography>
 
         </>

@@ -1,12 +1,3 @@
-/**
- * It takes a jobJson object, a new package name, a new class name, and a new method name, and returns
- * a new jobJson object with the jobDetails and jobSignature fields updated to reflect the new package
- * name, class name, and method name
- * 
- * @param order The order parameter is a string that contains the field name and the direction of the
- * sort.
- * @return A list of jobs that match the given state and method name.
- */
 package rs.rbt.jobrunrrbt.service
 
 import org.springframework.beans.factory.annotation.Autowired

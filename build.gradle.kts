@@ -6,6 +6,8 @@ plugins {
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
 	kotlin("plugin.jpa") version "1.7.22"
+	id("org.jetbrains.dokka") version "1.7.20"
+
 }
 
 group = "rs.rbt"
@@ -27,6 +29,8 @@ dependencies {
 	implementation ("org.jobrunr:jobrunr:6.0.0-M0")
 	implementation("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:1.7.20")
+
 
 }
 

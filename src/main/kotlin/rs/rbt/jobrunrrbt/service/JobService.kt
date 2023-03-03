@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import rs.rbt.jobrunrrbt.dto.JobDTO
+import rs.rbt.jobrunrrbt.dto.PageInfoDTO
 import rs.rbt.jobrunrrbt.helper.deserialize
 import rs.rbt.jobrunrrbt.helper.serialize
 import rs.rbt.jobrunrrbt.model.JobJson
@@ -20,201 +21,207 @@ class JobService {
     @Autowired
     lateinit var jobrunrJobRepository: JobrunrJobRepository
 
-    fun returnAllJobsWhereStateMatches(state: String, offset: Int, limit: Int,order: String): JobDTO {
+    fun returnAllJobsWhereStateMatches(state: String, offset: Int, limit: Int, order: String): JobDTO {
 
-        val splitOrder = order.split(':')
-        val direction = Sort.Direction.valueOf(splitOrder[1])
-        val sort : Sort = Sort.by(direction,splitOrder[0].lowercase())
+        val sort = getSortFromOrder(order)
 
-        val jobList = jobrunrJobRepository.findJobrunrJobsByState(state,PageRequest.of(offset,limit,sort))
-        val returnList: MutableList<JobJson> = mutableListOf()
+        val jobList = jobrunrJobRepository.findJobrunrJobsByState(state, PageRequest.of(offset, limit, sort))
+        val returnList = makeReturnList(jobList)
 
-        for (job in jobList) {
-            returnList.add(deserialize(job.jobasjson!!))
-        }
+        val pageInfo = createPageInfoDTO(jobList.size,limit,offset)
 
-        val total = jobList.size
-        val totalPages = (total-1) / limit + 1
-        val hasNext = offset<totalPages
-        val hasPrevious = offset>0
-
-        return  JobDTO(
+        return JobDTO(
             offset,
-            hasNext,
-            hasPrevious,
+            pageInfo.hasNext,
+            pageInfo.hasPrevious,
             returnList,
             limit,
             offset,
-            total,
-            totalPages
+            pageInfo.total,
+            pageInfo.totalPages
         )
     }
 
-    fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int,order: String): JobDTO {
+    fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int, order: String): JobDTO {
 
-        val splitOrder = order.split(':')
-        val direction = Sort.Direction.valueOf(splitOrder[1])
-        val sort : Sort = Sort.by(direction,splitOrder[0].lowercase())
+        val sort = getSortFromOrder(order)
+
         val leadingLetter = value[0]
         val restOfValue = value.drop(1)
         val regex = "^(.+[".plus(leadingLetter).plus("]").plus(".*").plus(restOfValue).plus(".*\\..*\\(.+)")
-        println(regex)
 
-        val jobList: List<JobrunrJob> = jobrunrJobRepository.findJobsWhereClassMatches(state,regex,PageRequest.of(offset,limit,sort))
-        val returnList: MutableList<JobJson> = mutableListOf()
-
-        for (job in jobList) {
-            returnList.add(deserialize(job.jobasjson!!))
-        }
+        val jobList: List<JobrunrJob> =
+            jobrunrJobRepository.findJobsWhereClassMatches(state, regex, PageRequest.of(offset, limit, sort))
+        val returnList = makeReturnList(jobList)
 
         val total = jobrunrJobRepository.countJobsWhereClassMatches(state, value)
-        val totalPages = (total-1) / limit + 1
-        val hasNext = offset<totalPages
-        val hasPrevious = offset>0
+
+        val pageInfoDTO = createPageInfoDTO(total,limit,offset)
 
         return JobDTO(
             offset,
-            hasNext,
-            hasPrevious,
+            pageInfoDTO.hasNext,
+            pageInfoDTO.hasPrevious,
             returnList,
             limit,
             offset,
             total,
-            totalPages
+            pageInfoDTO.totalPages
         )
     }
 
-    fun returnAllJobsWhereClassOrMethodMatch(state: String,value: String, offset: Int, limit: Int,order: String): String {
+    fun returnAllJobsWhereClassOrMethodMatch(
+        state: String,
+        value: String,
+        offset: Int,
+        limit: Int,
+        order: String
+    ): String {
 
-        val splitOrder = order.split(':')
-        val direction = Sort.Direction.valueOf(splitOrder[1])
-        val sort : Sort = Sort.by(direction,splitOrder[0].lowercase())
+        val sort = getSortFromOrder(order)
 
-        val jobList = jobrunrJobRepository.findJobsByClassAndMethod(state,value, PageRequest.of(offset, limit,sort))
-        val returnList: MutableList<JobJson> = mutableListOf()
-
-        for (job in jobList) {
-            returnList.add(deserialize(job.jobasjson!!))
-        }
+        val jobList = jobrunrJobRepository.findJobsByClassAndMethod(state, value, PageRequest.of(offset, limit, sort))
+        val returnList = makeReturnList(jobList)
 
         val total = jobrunrJobRepository.countJobsByClassAndMethod(state, value)
-        val totalPages = (total-1) / limit + 1
-        val hasNext = offset<totalPages
-        val hasPrevious = offset>0
 
-        return serialize( JobDTO(
-            offset,
-            hasNext,
-            hasPrevious,
-            returnList,
-            limit,
-            offset,
-            total,
-            totalPages
-        )
+        val pageInfoDTO = createPageInfoDTO(total,limit,offset)
+
+
+        return serialize(
+            JobDTO(
+                offset,
+                pageInfoDTO.hasNext,
+                pageInfoDTO.hasPrevious,
+                returnList,
+                limit,
+                offset,
+                total,
+                pageInfoDTO.totalPages
+            )
         )
 
     }
 
-    fun returnAllJobsWhereMethodMatches(state: String, value: String, offset: Int, limit: Int,order: String): JobDTO {
+    fun returnAllJobsWhereMethodMatches(state: String, value: String, offset: Int, limit: Int, order: String): JobDTO {
 
-        val splitOrder = order.split(':')
-        val direction = Sort.Direction.valueOf(splitOrder[1])
-        val sort : Sort = Sort.by(direction,splitOrder[0].lowercase())
+        val sort = getSortFromOrder(order)
+
         val regex = "^(.+[A-Z].+\\.".plus(value).plus(".*\\(.+)")
 
-        val jobList = jobrunrJobRepository.findJobsWhereMethodMatches(state, regex, PageRequest.of(offset, limit,sort))
-        val returnList: MutableList<JobJson> = mutableListOf()
+        val jobList = jobrunrJobRepository.findJobsWhereMethodMatches(state, regex, PageRequest.of(offset, limit, sort))
+        val returnList = makeReturnList(jobList)
 
-        for (job in jobList) {
-            returnList.add(deserialize(job.jobasjson!!))
-        }
 
         val total = jobrunrJobRepository.countJobsWhereMethodMatches(state, regex)
-        val totalPages = (total-1) / limit + 1
-        val hasNext = offset<totalPages
-        val hasPrevious = offset>0
+
+        val pageInfoDTO = createPageInfoDTO(total,limit,offset)
 
         return JobDTO(
             offset,
-            hasNext,
-            hasPrevious,
+            pageInfoDTO.hasNext,
+            pageInfoDTO.hasPrevious,
             returnList,
             limit,
             offset,
             total,
-            totalPages
+            pageInfoDTO.totalPages
         )
     }
 
-    fun updateJobWithTime(id: String, newPackageName: String, newMethodName: String,
+    fun updateJobWithTime(
+        id: String, newPackageName: String, newMethodName: String,
         newClassName: String, newScheduledTime: Instant
     ) {
 
         if (jobrunrJobRepository.existsById(id)) {
 
             val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(id)
-            val jobJson: JobJson = deserialize(job.get().jobasjson!!)
-            val newJobSignature: String = newPackageName
-                .plus('.')
-                .plus(newClassName)
-                .plus(".")
-                .plus(newMethodName)
-                .plus("(")
-                .plus(jobJson.jobDetails.jobParameters)
-                .plus(")")
+            var jobJson: JobJson = deserialize(job.get().jobasjson!!)
 
-            val splitMethodName = newMethodName.split(".")
-            val splitLength = splitMethodName.size-1
-            val newStaticFieldName = newMethodName.dropLast(splitMethodName[splitLength].length+1)
-            val methodNameForJobDetails = splitMethodName[splitLength]
+            jobJson = updateJobJsonFields(jobJson,newPackageName, newClassName, newMethodName)
 
-            jobJson.jobDetails.className = newPackageName.plus(".").plus(newClassName)
-            jobJson.jobDetails.methodName = methodNameForJobDetails
-            jobJson.jobDetails.staticFieldName = newStaticFieldName
-            jobJson.jobSignature = newJobSignature
-            jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt= newScheduledTime.minus(1, ChronoUnit.HOURS).toString()
+            jobJson.jobHistory[jobJson.jobHistory.size - 1].scheduledAt =
+                newScheduledTime.minus(1, ChronoUnit.HOURS).toString()
 
             val newJobJson: String = serialize(jobJson)
 
-
-            jobrunrJobRepository.updateJobSignature((id), newJobSignature)
+            jobrunrJobRepository.updateJobSignature((id), jobJson.jobSignature)
             jobrunrJobRepository.updateJobAsJson(id, newJobJson)
-            jobrunrJobRepository.updateScheduledTime(id,Instant.parse(jobJson.jobHistory[jobJson.jobHistory.size- 1].scheduledAt).minus(1, ChronoUnit.HOURS))
+            jobrunrJobRepository.updateScheduledTime(
+                id,
+                Instant.parse(jobJson.jobHistory[jobJson.jobHistory.size - 1].scheduledAt).minus(1, ChronoUnit.HOURS)
+            )
 
         }
     }
 
-    fun updateJob(id: String, newPackageName: String, newMethodName: String,newClassName: String) {
+    fun updateJob(id: String, newPackageName: String, newMethodName: String, newClassName: String) {
 
         if (jobrunrJobRepository.existsById(id)) {
 
             val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(id)
-            val jobJson: JobJson = deserialize(job.get().jobasjson!!)
-            val newJobSignature: String = newPackageName
-                .plus('.')
-                .plus(newClassName)
-                .plus(".")
-                .plus(newMethodName)
-                .plus("(")
-                .plus(jobJson.jobDetails.jobParameters)
-                .plus(")")
+            var jobJson: JobJson = deserialize(job.get().jobasjson!!)
 
-            val splitMethodName = newMethodName.split(".")
-            val splitLength = splitMethodName.size-1
-            val newStaticFieldName = newMethodName.dropLast(splitMethodName[splitLength].length+1)
-            val methodNameForJobDetails = splitMethodName[splitLength]
-
-            jobJson.jobDetails.className = newPackageName.plus(".").plus(newClassName)
-            jobJson.jobDetails.methodName = methodNameForJobDetails
-            jobJson.jobDetails.staticFieldName = newStaticFieldName
-            jobJson.jobSignature = newJobSignature
+            jobJson = updateJobJsonFields(jobJson,newPackageName, newClassName, newMethodName)
 
             val newJobJson: String = serialize(jobJson)
 
-            jobrunrJobRepository.updateJobSignature((id), newJobSignature)
+            jobrunrJobRepository.updateJobSignature((id), jobJson.jobSignature)
             jobrunrJobRepository.updateJobAsJson(id, newJobJson)
 
         }
     }
+}
+
+private fun getSortFromOrder(order: String): Sort {
+
+    val splitOrder = order.split(':')
+    val direction = Sort.Direction.valueOf(splitOrder[1])
+
+    return Sort.by(direction, splitOrder[0].lowercase())
+}
+
+private fun makeReturnList(jobList: List<JobrunrJob>): MutableList<JobJson> {
+
+    val returnList: MutableList<JobJson> = mutableListOf()
+
+    for (job in jobList) {
+        returnList.add(deserialize(job.jobasjson!!))
+    }
+
+    return returnList
+}
+
+private fun createPageInfoDTO(total: Int, limit: Int, offset: Int): PageInfoDTO {
+
+    val totalPages = (total - 1) / limit + 1
+    val hasNext = offset < totalPages
+    val hasPrevious = offset > 0
+
+    return PageInfoDTO(total,totalPages,hasNext,hasPrevious)
+}
+
+private fun updateJobJsonFields(jobJson: JobJson, newPackageName: String, newClassName: String, newMethodName: String): JobJson {
+
+    val newJobSignature: String = newPackageName
+        .plus('.')
+        .plus(newClassName)
+        .plus(".")
+        .plus(newMethodName)
+        .plus("(")
+        .plus(jobJson.jobDetails.jobParameters)
+        .plus(")")
+
+    val splitMethodName = newMethodName.split(".")
+    val splitLength = splitMethodName.size - 1
+    val newStaticFieldName = newMethodName.dropLast(splitMethodName[splitLength].length + 1)
+    val methodNameForJobDetails = splitMethodName[splitLength]
+
+    jobJson.jobDetails.className = newPackageName.plus(".").plus(newClassName)
+    jobJson.jobDetails.methodName = methodNameForJobDetails
+    jobJson.jobDetails.staticFieldName = newStaticFieldName
+    jobJson.jobSignature = newJobSignature
+
+    return jobJson
 }

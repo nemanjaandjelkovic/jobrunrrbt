@@ -1,3 +1,16 @@
+# Installation and setup
+
+ 
+
+ - Install node version 14+
+ - Run `npm install` inside the ***project folder***
+ - Inside the `package.json` and `jobs.spec.js` change servers ***ip adress*** where jobrunr dashboard is hosted and add `:PORT_WHERE_JOBRUNR_DASHBOARD_IS_HOSTED` to it.
+ - Inside the `package.json` set `"proxy": "http://ipadress:PORT_WHERE_JOBRUNR_DASHBOARD_IS_HOSTED/"`
+ - Inside the `jobs.spec.js` set `cy.visit('http://ipadress:PORT_WHERE_JOBRUNR_DASHBOARD_IS_HOSTED/dashboard/jobs');`
+ - After completing the steps above and running the program, dashboard should be running on the port `3000`
+
+
+
 # JobRunr RBT
 
 Microservice over database with interactive dashboard
@@ -40,14 +53,3 @@ Dropdown menu where the job details can be edited.
 #### Job history
 Details of the jobs life cycle
 ![Job history](https://i.imgur.com/5h7GRCx.png)
-
-## Installation and setup
-
- 
-
- - Install node version 14+
- - Run `npm install` inside the ***project folder***
- - Inside the `package.json` and `jobs.spec.js` change servers ***ip adress*** where jobrunr dashboard is hosted and add `:PORT_WHERE_JOBRUNR_DASHBOARD_IS_HOSTED` to it.
- - Inside the `package.json` set `"proxy": "http://ipadress:PORT_WHERE_JOBRUNR_DASHBOARD_IS_HOSTED/"`
- - Inside the `jobs.spec.js` set `cy.visit('http://ipadress:PORT_WHERE_JOBRUNR_DASHBOARD_IS_HOSTED/dashboard/jobs');`
- - After completing the steps above and running the program, dashboard should be running on the port `3000`

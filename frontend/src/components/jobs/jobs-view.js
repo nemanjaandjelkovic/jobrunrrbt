@@ -55,6 +55,11 @@ const JobsView = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [jobPage, setJobPage] = React.useState({total: 0, limit: 20, currentPage: 0, items: []});
 
+    const [searchPar, setPar] = React.useState("");
+    const [searchVal, setVal] = React.useState("");
+    const [limitJobsPerPage, setLimitJobsPerPage] = React.useState(20);
+
+
 
     let sort = 'updatedAt:ASC';
     switch (jobState.toUpperCase()) {
@@ -69,8 +74,10 @@ const JobsView = (props) => {
 
     function setData(parameter, value) {
         setIsLoading(false);
-        const offset = (page) * 20;
-        const limit = 20;
+        const offset = (page) * limitJobsPerPage;
+        const limit = limitJobsPerPage;
+        setVal(value)
+        setPar(parameter)
         let searchValue = value
         if (parameter === "class") {
             searchValue = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
@@ -96,8 +103,8 @@ const JobsView = (props) => {
 
     React.useEffect(() => {
         setIsLoading(true);
-        const offset = (page) * 20;
-        const limit = 20;
+        const offset = (page) * limitJobsPerPage;
+        const limit = limitJobsPerPage;
         axios.get("http://localhost:8080/api/state", {
             params: {
                 state: jobState.toUpperCase(),
@@ -113,7 +120,37 @@ const JobsView = (props) => {
                 }
             )
             .catch(err => console.warn(err));
-    }, [page, jobState, sort, history.location.key]);
+    }, [page, jobState, sort, history.location.key,limitJobsPerPage]);
+
+    function setLimitJobViewPerPage(limit) {
+        setIsLoading(false);
+        const offset = (page) * limit;
+        let searchValue = searchVal
+        if (searchPar === "class") {
+            searchValue = searchVal.charAt(0).toUpperCase() + searchVal.slice(1).toLowerCase()
+        }
+        axios.get("http://localhost:8080/api/search", {
+            params: {
+                searchParameter: searchPar,
+                searchValue: searchValue,
+                state: jobState.toUpperCase(),
+                offset: offset,
+                limit: limit,
+                order: sort
+            }
+        })
+            .then(
+                response => {
+                    if(response.data.limit>response.data.total){
+                        response.data.currentPage=0
+                        setLimitJobsPerPage(limit)
+                    }
+                    setJobPage(response)
+                    setIsLoading(false)
+                }
+            )
+            .catch(err => console.warn(err));
+    }
 
     return (
         <main className={classes.content}>
@@ -126,7 +163,7 @@ const JobsView = (props) => {
                 <>
                     <Paper>
                         <FilterJobs data={setData}></FilterJobs>
-                        <JobsTable jobPage={jobPage.data} jobState={jobState}/>
+                        <JobsTable jobPage={jobPage.data} jobState={jobState} jobListLimit={setLimitJobViewPerPage}/>
                     </Paper>
                     <VersionFooter/>
                 </>

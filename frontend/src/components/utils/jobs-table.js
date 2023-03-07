@@ -56,7 +56,6 @@ const JobsTable = (props) => {
     const isLoading = props.isLoading;
     const jobPage = props.jobPage;
     const jobState = props.jobState;
-    const [page, setPage] = React.useState(jobPage.currentPage);
     const [rowsPerPage, setRowsPerPage] = React.useState(jobPage.limit);
 
     let column;
@@ -143,19 +142,23 @@ const JobsTable = (props) => {
     }
 
     const handleChangePage = (event, newPage) => {
-        console.log(newPage)
         let urlSearchParams = new URLSearchParams(location.search);
         urlSearchParams.set("page", newPage);
         history.push(`?${urlSearchParams.toString()}`);
-        setPage(newPage);
     };
 
     const handleChangeRowsPerPage = (
         event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) => {
-        setRowsPerPage(parseInt(event.target.value));
         jobPage.limit = parseInt(event.target.value);
-        setPage(0)
+        setRowsPerPage(parseInt(event.target.value));
+        props.jobListLimit(event.target.value)
+        if(parseInt(event.target.value)>jobPage.total && jobPage.currentPage!==0)
+        {
+            let urlSearchParams = new URLSearchParams(location.search);
+            urlSearchParams.set("page", 0);
+            history.push(`?${urlSearchParams.toString()}`);
+        }
     };
 
     return (
@@ -260,10 +263,10 @@ const JobsTable = (props) => {
                     <TablePagination
                         id="jobs-table-pagination"
                         component="div"
-                        rowsPerPageOptions={[20, 50]}
+                        rowsPerPageOptions={[20,50,100]}
                         count={jobPage.total}
                         rowsPerPage={rowsPerPage}
-                        page={jobPage.currentPage}
+                        page={!jobPage.total || jobPage.total <= 0 ? 0 : jobPage.currentPage}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />

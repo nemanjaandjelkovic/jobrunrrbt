@@ -1,15 +1,6 @@
 
 # JobRunr RBT Application
 
-Application is general purpose to monitoring and work with your jobs.
-
-The dashboard offers full overview over Jobs. They can be searched, requeued, deleted, rescheduled and edited from here.
-
-
-
-
-
-
 ## Introduction
 
 JobRunr RBT Application is a general-purpose application designed to make job management easier by providing a dashboard that allows users to search for jobs by method or class. The dashboard offers a complete overview of jobs, including their status, functionality, and ability to be edited, deleted, rescheduled, and requeued.

@@ -15,6 +15,9 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
 
+/**
+ *  This service contains all functions used by the controller
+ */
 @Service
 class JobService {
 
@@ -65,9 +68,9 @@ class JobService {
 
         val sort = getSortFromOrder(order)
 
-        val leadingLetter = value[0]
+        val leadingLetter = value.first()
         val restOfValue = value.drop(1)
-        val regex = "^(.+[".plus(leadingLetter).plus("]").plus(".*").plus(restOfValue).plus(".*\\..*\\(.+)")
+        val regex = "^(.+[$leadingLetter].*$restOfValue.*\\..*\\(.+)"
 
         val jobList: List<JobrunrJob> =
             jobrunrJobRepository.findJobsWhereClassMatches(state, regex, PageRequest.of(offset, limit, sort))
@@ -146,7 +149,7 @@ class JobService {
 
         val sort = getSortFromOrder(order)
 
-        val regex = "^(.+[A-Z].+\\.".plus(value).plus(".*\\(.+)")
+        val regex = "^(.+[A-Z].+\\.$value.*\\(.+)"
 
         val jobList = jobrunrJobRepository.findJobsWhereMethodMatches(state, regex, PageRequest.of(offset, limit, sort))
         val returnList = makeReturnList(jobList)
@@ -249,19 +252,13 @@ private fun getSortFromOrder(order: String): Sort {
 /**
  * It takes a list of Jobrunr jobs, deserializes them into JobJson objects, and returns a list of
  * JobJson objects.
- * 
+ *
  * @param jobList List<JobrunrJob>
  * @return A list of JobJson objects
  */
-private fun makeReturnList(jobList: List<JobrunrJob>): MutableList<JobJson> {
+private fun makeReturnList(jobList: List<JobrunrJob>): List<JobJson> {
 
-    val returnList: MutableList<JobJson> = mutableListOf()
-
-    for (job in jobList) {
-        returnList.add(deserialize(job.jobasjson!!))
-    }
-
-    return returnList
+    return jobList.map { deserialize(it.jobasjson!!) }
 }
 
 /**
@@ -299,21 +296,14 @@ private fun updateJobJsonFields(
     newMethodName: String
 ): JobJson {
 
-    val newJobSignature: String = newPackageName
-        .plus('.')
-        .plus(newClassName)
-        .plus(".")
-        .plus(newMethodName)
-        .plus("(")
-        .plus(jobJson.jobDetails.jobParameters)
-        .plus(")")
+    val newJobSignature = "$newPackageName.$newClassName.$newMethodName(${jobJson.jobDetails.jobParameters})"
 
     val splitMethodName = newMethodName.split(".")
     val splitLength = splitMethodName.size - 1
     val newStaticFieldName = newMethodName.dropLast(splitMethodName[splitLength].length + 1)
     val methodNameForJobDetails = splitMethodName[splitLength]
 
-    jobJson.jobDetails.className = newPackageName.plus(".").plus(newClassName)
+    jobJson.jobDetails.className = "$newPackageName.$newClassName"
     jobJson.jobDetails.methodName = methodNameForJobDetails
     jobJson.jobDetails.staticFieldName = newStaticFieldName
     jobJson.jobSignature = newJobSignature

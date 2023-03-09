@@ -49,7 +49,7 @@ export default function VersionFooter() {
                 localStorage.setItem('anonymousUsageDataSent', new Date().toISOString());
             }
         }
-    }, [jobRunrInfo]);
+    }, [jobRunrInfo,stats.allTimeSucceeded,stats.backgroundJobServers,stats.succeeded]);
 
     return (
         <>

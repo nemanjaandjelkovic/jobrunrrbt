@@ -14,7 +14,7 @@ class JobFactory(private val scheduler: JobScheduler) {
             println("Hello World")
         }
 
-        scheduler.schedule(LocalDateTime.now().plusHours(1), { println("Input text") })
+        scheduler.schedule(LocalDateTime.now().plusHours(1)) { println("Input text") }
     }
 
 }

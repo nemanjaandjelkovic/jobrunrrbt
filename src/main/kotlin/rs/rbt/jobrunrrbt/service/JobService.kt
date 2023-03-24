@@ -170,6 +170,9 @@ class JobService {
             pageInfoDTO.totalPages
         )
     }
+    fun returnUniqueJobSignatures():List<String> {
+        return jobrunrJobRepository.findUniqueJobSignatures()
+    }
 
     /**
      *  This function updates the job with the given id with the given new package name, new method

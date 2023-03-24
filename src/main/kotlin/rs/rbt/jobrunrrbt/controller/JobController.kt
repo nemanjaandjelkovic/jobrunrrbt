@@ -72,6 +72,10 @@ class JobController {
             }
         }
     }
+    @GetMapping("/jobSignatures")
+    fun searchUniqueJobSignatures(): List<String> {
+        return jobService.returnUniqueJobSignatures()
+    }
 /**
  * It updates a job with the given id, package name, method name, class name, and scheduled time
  * 

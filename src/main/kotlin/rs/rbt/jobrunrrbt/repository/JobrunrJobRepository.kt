@@ -47,6 +47,10 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
         """select * from jobrunr_jobs where state =?1 and jobsignature ~ ?2""", nativeQuery = true
     )
     fun findJobsWhereMethodMatches(state: String, regex: String, pageable: Pageable): MutableList<JobrunrJob>
+    @Query(
+        """select distinct jobsignature from jobrunr_jobs""", nativeQuery = true
+    )
+    fun findUniqueJobSignatures(): MutableList<String>
 
     /**  It counts the number of jobs where the state is equal to the first parameter and the
     jobsignature

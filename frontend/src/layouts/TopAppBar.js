@@ -76,9 +76,13 @@ const TopAppBar = () => {
                             to="/dashboard/recurring-jobs">
                         Recurring Jobs <Chip color="secondary" label={stats.recurringJobs}/>
                     </Button>
+                    <Button id="create-jobs" color="inherit" component={RouterLink} to="/dashboard/jobs-create">
+                        Create Jobs
+                    </Button>
                     <Button id="servers-btn" color="inherit" component={RouterLink} to="/dashboard/servers">
                         Servers <Chip color="secondary" label={stats.backgroundJobServers}/>
                     </Button>
+
                 </div>
                 <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu"
                             target="_blank" href="https://github.com/jobrunr/jobrunr">

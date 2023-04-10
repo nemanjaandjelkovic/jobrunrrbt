@@ -10,6 +10,7 @@ import JobView from "../components/jobs/job-view";
 import JobsView from "../components/jobs/jobs-view";
 import Sidebar from "../components/jobs/sidebar";
 import GithubStarPopup from "../components/utils/github-star-popup";
+import JobsCreate from "../components/custom/jobs-create";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -48,6 +49,7 @@ const AdminUI = function () {
                         <Route path="/dashboard/jobs/:id" component={WithSidebar(Sidebar, JobView)}/>
                         <Route path="/dashboard/jobs" component={WithSidebar(Sidebar, JobsView)}/>
                         <Route path="/dashboard/recurring-jobs" component={RecurringJobs}/>
+                        <Route path="/dashboard/jobs-create" component={JobsCreate}/>
                         <Route path="/dashboard/servers" component={Servers}/>
                         <Redirect from="/dashboard" to="/dashboard/overview"/>
                     </Switch>

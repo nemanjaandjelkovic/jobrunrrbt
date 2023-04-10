@@ -232,7 +232,7 @@ const RecurringJobs = (props) => {
             {apiStatus &&
             <Snackbar open={true} autoHideDuration={3000} onClose={handleCloseAlert}>
                 <Alert severity={apiStatus.severity}>
-                    {apiStatus.message}
+                    {apiStatus.message }
                 </Alert>
             </Snackbar>
             }

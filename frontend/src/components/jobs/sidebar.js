@@ -19,7 +19,6 @@ const categories = [
     {name: "failed", state: "FAILED", label: "Failed", icon: <AlertCircleOutline/>, component: Link},
     {name: "deleted", state: "DELETED", label: "Deleted", icon: <Delete/>, component: Link},
     {name: "send", state: "SEND", label: "Jobs Re-Enqueue", icon: <AllInbox/>, component: Button}
-
 ];
 const Sidebar = () => {
     const [stats, setStats] = React.useState(statsState.getStats());

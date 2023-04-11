@@ -17,7 +17,7 @@ export default function JobCreate(props) {
             if (jobTypeName !== undefined) {
                 props.jobData.jobSignature = jobTypeName
                 props.jobData.jobArg = argFieldsDisplay
-                props.jobData.jobDate = jobDate
+                props.jobData.jobDate = jobDate+":00.000000Z"
             }
         }, 1000)
         return () => clearTimeout(delayDebounceFn)

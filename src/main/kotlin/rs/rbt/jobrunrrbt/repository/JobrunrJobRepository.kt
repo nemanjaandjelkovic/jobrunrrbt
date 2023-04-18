@@ -7,9 +7,16 @@ import org.springframework.data.jpa.repository.Query
 import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.model.JobrunrJob
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.*
-
 interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
+
+    @Query(
+        """select * from jobrunr_jobs j 
+        where j.jobsignature = ?1 and j.state not in ('ENQUEUED','PROCESSING')""", nativeQuery = true
+    )
+    fun findJobrunrJobsBySignatureIfNotBeingProcessed(jobSignature: String): List<JobrunrJob>
 
     /**
      * `findJobrunrJobsByState` returns a `List<JobrunrJob>` and takes a `String` and a `Pageable` as
@@ -109,6 +116,20 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
      * @param value The value to be updated
      */
     @Modifying
-    @Query("update JobrunrJob set scheduledat = ?2 where id = ?1")
-    fun updateScheduledTime(id: String, value: Instant)
+    @Query(
+        """update jobrunr_jobs set scheduledat = ?2 where id = ?1""", nativeQuery = true
+    )
+    fun updateScheduledTime(id: String, value: OffsetDateTime)
+
+    @Modifying
+    @Query(
+        """update jobrunr_jobs set updatedat = ?2 where id = ?1""", nativeQuery = true
+    )
+    fun updateUpdatedAt(id: String, value: Instant)
+
+    @Modifying
+    @Query(
+        """update jobrunr_jobs set state = ?2 where id = ?1""", nativeQuery = true
+    )
+    fun updateState(id: String, value: String)
 }

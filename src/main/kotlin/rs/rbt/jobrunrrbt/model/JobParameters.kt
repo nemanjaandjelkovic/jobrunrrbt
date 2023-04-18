@@ -9,5 +9,5 @@ class JobParameters(
     var className: String,
     var actualClassName: String,
     @JsonProperty(OBJECT)
-    var jobObject: String,
+    var jobObject: String?,
 )

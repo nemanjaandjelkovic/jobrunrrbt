@@ -1,6 +1,7 @@
 package rs.rbt.jobrunrrbt
 
 import jakarta.annotation.PostConstruct
+import org.jobrunr.jobs.annotations.Job
 import org.jobrunr.scheduling.JobScheduler
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -9,12 +10,9 @@ import java.time.LocalDateTime
 class JobFactory(private val scheduler: JobScheduler) {
 
     @PostConstruct
+    @Job(name = "1 minute delay job")
     fun schedule() {
-        scheduler.enqueue {
-            println("Hello World")
-        }
-
-        scheduler.schedule(LocalDateTime.now().plusHours(1)) { println("Input text") }
+        scheduler.schedule(LocalDateTime.now().plusMinutes(1)) { println("Job with 1 minute delay") }
     }
 
 }

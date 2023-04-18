@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import rs.rbt.jobrunrrbt.dto.JobDTO
+import rs.rbt.jobrunrrbt.dto.JobSignatureDTO
 import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.service.JobService
-import java.time.Instant
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 /**  It contains functions that return jobs based on the state, offset, limit, order, parameter, and
 value parameters */
@@ -72,7 +74,7 @@ class JobController {
             }
         }
     }
-    @GetMapping("/jobSignatures")
+    @GetMapping("/job_signatures")
     fun searchUniqueJobSignatures(): List<String> {
         return jobService.returnUniqueJobSignatures()
     }
@@ -93,7 +95,7 @@ class JobController {
         @RequestParam(value = PACKAGE_NAME, required = true) packageName: String,
         @RequestParam(value = METHOD_NAME, required = true) methodName: String,
         @RequestParam(value = CLASS_NAME, required = true) className: String,
-        @RequestParam(value = SCHEDULED_TIME, required = false) scheduledTime: Instant?
+        @RequestParam(value = SCHEDULED_TIME, required = false) scheduledTime: OffsetDateTime?
     ) {
         when (scheduledTime) {
             (null) -> {
@@ -104,5 +106,12 @@ class JobController {
 
             }
         }
+    }
+
+    @Transactional
+    @PostMapping("/new_jobs")
+    fun receiveJobs(@RequestBody jobs: List<JobSignatureDTO>)
+    {
+        jobService.createJobs(jobs)
     }
 }

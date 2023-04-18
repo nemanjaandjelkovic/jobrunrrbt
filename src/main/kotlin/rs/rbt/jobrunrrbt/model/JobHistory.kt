@@ -19,8 +19,8 @@ class JobHistory (
     @JsonProperty(AT_CLASS)
     var atClass: String,
     var state: String,
-    @DateTimeFormat(style = DATE_TIME_STYLE)
-    @JsonFormat(pattern = DATE_TIME_STYLE)
+    @DateTimeFormat(style = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'")
     var createdAt: LocalDateTime,
     @DateTimeFormat(style = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSX")

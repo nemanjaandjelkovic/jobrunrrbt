@@ -184,7 +184,11 @@ class JobService {
      * @param newScheduledTime The new time you want to schedule the job for.
      */
     fun updateJobWithTime(
-        id: String, newPackageName: String, newMethodName: String, newClassName: String, newScheduledTime: OffsetDateTime?
+        id: String,
+        newPackageName: String,
+        newMethodName: String,
+        newClassName: String,
+        newScheduledTime: OffsetDateTime?
     ) {
 
         if (jobrunrJobRepository.existsById(id)) {
@@ -252,20 +256,23 @@ class JobService {
                     if (duplicate != null) {
 
                         duplicate.scheduledat = oneOfJobs.jobTime.atZoneSameInstant(
-                            ZoneOffset.UTC).toLocalDateTime()
+                            ZoneOffset.UTC
+                        ).toLocalDateTime()
                         duplicate.updatedat = LocalDateTime.now(ZoneId.of("UTC"))
                         duplicate.state = "SCHEDULED"
 
                         val duplicateJobJson = deserialize(duplicate.jobasjson!!)
 
-                        duplicateJobJson.jobHistory.add(JobHistory(
-                            atClass = "org.jobrunr.jobs.states.ScheduledState",
-                            state = "SCHEDULED",
-                            createdAt = LocalDateTime.now(ZoneId.of("UTC")),
-                            scheduledAt = oneOfJobs.jobTime,
-                            recurringJobId = null,
-                            reason = null
-                        ))
+                        duplicateJobJson.jobHistory.add(
+                            JobHistory(
+                                atClass = "org.jobrunr.jobs.states.ScheduledState",
+                                state = "SCHEDULED",
+                                createdAt = LocalDateTime.now(ZoneId.of("UTC")),
+                                scheduledAt = oneOfJobs.jobTime,
+                                recurringJobId = null,
+                                reason = null
+                            )
+                        )
 
                         duplicate.jobasjson = serialize(duplicateJobJson)
                         jobrunrJobRepository.save(duplicate)
@@ -275,6 +282,9 @@ class JobService {
                         val newJob = createJob(oneOfJobs.jobSignature, oneOfJobs.jobArguments, oneOfJobs.jobTime)
                         jobrunrJobRepository.save(newJob)
                     }
+                } else {
+                    val newJob = createJob(oneOfJobs.jobSignature, oneOfJobs.jobArguments, oneOfJobs.jobTime)
+                    jobrunrJobRepository.save(newJob)
                 }
             }
         }

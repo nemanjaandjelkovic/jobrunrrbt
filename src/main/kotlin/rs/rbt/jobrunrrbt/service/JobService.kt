@@ -14,7 +14,6 @@ import rs.rbt.jobrunrrbt.model.*
 import rs.rbt.jobrunrrbt.repository.JobrunrJobRepository
 import java.time.*
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 /**
@@ -199,18 +198,17 @@ class JobService {
             jobJson = updateJobJsonFields(jobJson, newPackageName, newClassName, newMethodName)
 
             if (newScheduledTime != null) {
-                jobJson.jobHistory[jobJson.jobHistory.size - 1].scheduledAt =
-                    newScheduledTime.minus(1, ChronoUnit.HOURS)
+                jobJson.jobHistory[jobJson.jobHistory.size - 1].scheduledAt = newScheduledTime
             }
 
             val newJobJson: String = serialize(jobJson)
 
             jobrunrJobRepository.updateJobSignature((id), jobJson.jobSignature)
             jobrunrJobRepository.updateJobAsJson(id, newJobJson)
-            jobJson.jobHistory[jobJson.jobHistory.size - 1].scheduledAt?.let {
+            jobJson.jobHistory[jobJson.jobHistory.size - 1].scheduledAt?.let { newTime ->
                 jobrunrJobRepository.updateScheduledTime(
                     id,
-                    it.minus(1, ChronoUnit.HOURS)
+                    newTime
                 )
             }
 

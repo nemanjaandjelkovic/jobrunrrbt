@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -16,23 +17,34 @@ import java.time.format.DateTimeParseException
 
 /**
  * It takes an object and returns a JSON string
- * 
+ *
  * @param obj Any - The object to serialize
  * @return A string
  */
 fun serialize(obj: Any): String {
 
     val mapper = jacksonObjectMapper().apply {
-        registerModule(KotlinModule())
+        registerModule(
+            KotlinModule.Builder()
+                .withReflectionCacheSize(512)
+                .configure(KotlinFeature.NullToEmptyCollection, false)
+                .configure(KotlinFeature.NullToEmptyMap, false)
+                .configure(KotlinFeature.NullIsSameAsDefault, false)
+                .configure(KotlinFeature.SingletonSupport, false)
+                .configure(KotlinFeature.StrictNullChecks, false)
+                .
+                build()
+        )
         registerModule(JavaTimeModule())
     }
     mapper.findAndRegisterModules()
 
     return mapper.writeValueAsString(obj)
 }
+
 /**
  * It takes a JSON string and returns a JobJson object
- * 
+ *
  * @param json String - The JSON string to deserialize
  * @return JobJson
  */
@@ -40,7 +52,16 @@ fun serialize(obj: Any): String {
 fun deserialize(json: String): JobJson {
 
     val mapper = jacksonObjectMapper().apply {
-        registerModule(KotlinModule())
+        registerModule(
+            KotlinModule.Builder()
+                .withReflectionCacheSize(512)
+                .configure(KotlinFeature.NullToEmptyCollection, false)
+                .configure(KotlinFeature.NullToEmptyMap, false)
+                .configure(KotlinFeature.NullIsSameAsDefault, false)
+                .configure(KotlinFeature.SingletonSupport, false)
+                .configure(KotlinFeature.StrictNullChecks, false)
+                .build()
+        )
         registerModule(JavaTimeModule())
     }
     mapper.findAndRegisterModules()
@@ -58,7 +79,7 @@ class CustomOffsetDateTimeDeserializer : JsonDeserializer<OffsetDateTime>() {
             OffsetDateTime.parse(str)
         } catch (e: DateTimeParseException) {
             try {
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                val formatter = DateTimeFormatter.ofPattern(PATTERN_SSZ)
                 LocalDateTime.parse(str, formatter).atOffset(ZoneOffset.UTC)
             } catch (e: DateTimeParseException) {
                 null

@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import rs.rbt.jobrunrrbt.dto.JobArgumentsDTO
 import rs.rbt.jobrunrrbt.dto.JobDTO
 import rs.rbt.jobrunrrbt.dto.JobSignatureDTO
 import rs.rbt.jobrunrrbt.dto.PageInfoDTO
-import rs.rbt.jobrunrrbt.helper.deserialize
-import rs.rbt.jobrunrrbt.helper.serialize
+import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.model.*
 import rs.rbt.jobrunrrbt.repository.JobrunrJobRepository
 import java.time.*
@@ -182,6 +182,7 @@ class JobService {
      * @param newClassName The new class name of the job
      * @param newScheduledTime The new time you want to schedule the job for.
      */
+    @Transactional
     fun updateJobWithTime(
         id: String,
         newPackageName: String,
@@ -223,6 +224,7 @@ class JobService {
      * @param newMethodName The new method name of the job
      * @param newClassName The new class name of the job
      */
+    @Transactional
     fun updateJob(id: String, newPackageName: String, newMethodName: String, newClassName: String) {
 
         if (jobrunrJobRepository.existsById(id)) {
@@ -240,10 +242,11 @@ class JobService {
         }
     }
 
+    @Transactional
     fun createJobs(jobs: List<JobSignatureDTO>) {
 
         jobs.forEach { oneOfJobs ->
-            if (Regex("[a-z0-9.]*\\.[A-Z].*\\.[a-z0-9]*\\(.*\\)\$").find(oneOfJobs.jobSignature)?.value.equals(oneOfJobs.jobSignature)) {
+            if (Regex(REGEX_TO_CHECK_IF_SIGNATURE_IS_VALID).find(oneOfJobs.jobSignature)?.value.equals(oneOfJobs.jobSignature)) {
 
                 val listOfPossibleDuplicates =
                     jobrunrJobRepository.findJobrunrJobsBySignatureIfNotBeingProcessed(oneOfJobs.jobSignature)
@@ -253,18 +256,16 @@ class JobService {
 
                     if (duplicate != null) {
 
-                        duplicate.scheduledat = oneOfJobs.jobTime.atZoneSameInstant(
-                            ZoneOffset.UTC
-                        ).toLocalDateTime()
+                        duplicate.scheduledat = oneOfJobs.jobTime.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime()
                         duplicate.updatedat = LocalDateTime.now(ZoneId.of("UTC"))
-                        duplicate.state = "SCHEDULED"
+                        duplicate.state = STATE_SCHEDULED
 
                         val duplicateJobJson = deserialize(duplicate.jobasjson!!)
 
                         duplicateJobJson.jobHistory.add(
                             JobHistory(
-                                atClass = "org.jobrunr.jobs.states.ScheduledState",
-                                state = "SCHEDULED",
+                                atClass = DEFAULT_AT_CLASS,
+                                state = STATE_SCHEDULED,
                                 createdAt = LocalDateTime.now(ZoneId.of("UTC")),
                                 scheduledAt = oneOfJobs.jobTime,
                                 recurringJobId = null,
@@ -366,10 +367,10 @@ private fun updateJobJsonFields(
 private fun createJob(jobSignature: String, jobArguments: Array<JobArgumentsDTO>, jobTime: OffsetDateTime): JobrunrJob {
     val job = JobrunrJob()
 
-    val classNameList = Regex("\\((.*?)\\)").find(jobSignature)!!.groupValues[1].split(",")
-
+    val classNameList = Regex(REGEX_TO_GET_ARGUMENTS).find(jobSignature)!!.groupValues[1].split(",")
     val jobParameters: MutableList<JobParameters> = mutableListOf()
     val argumentList: MutableList<String?> = mutableListOf()
+
     jobArguments.forEachIndexed { index, element ->
         jobParameters.add(
             JobParameters(
@@ -379,9 +380,9 @@ private fun createJob(jobSignature: String, jobArguments: Array<JobArgumentsDTO>
         argumentList.add(element.argData)
     }
 
-    val jobDetailsClassName = Regex("([a-z]+\\.[a-z0-9.?]+\\.[A-Z][a-zA-Z0-9_]*)").find(jobSignature)!!.value
+    val jobDetailsClassName = Regex(REGEX_TO_GET_CLASS_NAME).find(jobSignature)!!.value
 
-    val staticFieldAndMethodName = Regex("[A-Z][a-z]*\\.(.*)\\(").find(jobSignature)!!.groupValues[1]
+    val staticFieldAndMethodName = Regex(REGEX_TO_GET_STATIC_FIELD_AND_METHOD_NAME).find(jobSignature)!!.groupValues[1]
 
     var staticFieldName: String? = null
 
@@ -390,7 +391,8 @@ private fun createJob(jobSignature: String, jobArguments: Array<JobArgumentsDTO>
 
     val methodName = staticFieldAndMethodName.substringAfterLast(".")
 
-    val jobName = Regex(".*\\(").find(jobSignature)!!.value + argumentList.joinToString(",") + ")"
+    val jobName =
+        Regex(REGEX_TO_GET_EVERYTHING_BEFORE_FIRST_ARGUMENT).find(jobSignature)!!.value + argumentList.joinToString(",") + ")"
 
     val generatedID = UUID.randomUUID().toString()
     val creationTime = LocalDateTime.now(ZoneId.of("UTC"))
@@ -400,8 +402,8 @@ private fun createJob(jobSignature: String, jobArguments: Array<JobArgumentsDTO>
     val jobJson = JobJson(
         1, jobSignature, jobName, null, arrayListOf(), jobDetails, generatedID, arrayListOf(
             JobHistory(
-                atClass = "org.jobrunr.jobs.states.ScheduledState",
-                state = "SCHEDULED",
+                atClass = DEFAULT_AT_CLASS,
+                state = STATE_SCHEDULED,
                 createdAt = creationTime,
                 scheduledAt = jobTime,
                 recurringJobId = null,
@@ -414,12 +416,12 @@ private fun createJob(jobSignature: String, jobArguments: Array<JobArgumentsDTO>
     job.version = 1
     job.jobasjson = serialize(jobJson)
     job.jobsignature = jobSignature
-    job.state = "SCHEDULED"
+    job.state = STATE_SCHEDULED
     job.createdat = creationTime
     job.updatedat = creationTime
     job.scheduledat = LocalDateTime.parse(
-        jobTime.atZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
-        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        jobTime.atZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(PATTERN_SSZ)),
+        DateTimeFormatter.ofPattern(PATTERN_SSZ)
     )
     job.recurringjobid = null
 

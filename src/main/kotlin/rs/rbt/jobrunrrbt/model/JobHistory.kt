@@ -8,22 +8,22 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import org.springframework.format.annotation.DateTimeFormat
 import rs.rbt.jobrunrrbt.helper.AT_CLASS
 import rs.rbt.jobrunrrbt.helper.CustomOffsetDateTimeDeserializer
-import rs.rbt.jobrunrrbt.helper.DATE_TIME_STYLE
-import java.time.Instant
+import rs.rbt.jobrunrrbt.helper.PATTERN_SSSSSSX
+import rs.rbt.jobrunrrbt.helper.PATTERN_SSSSSSZ
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
 /**  `JobHistory` is a class that represents a job history record */
 @JsonIgnoreProperties(ignoreUnknown = true)
-class JobHistory (
+class JobHistory(
     @JsonProperty(AT_CLASS)
     var atClass: String,
     var state: String,
-    @DateTimeFormat(style = DATE_TIME_STYLE)
-    @JsonFormat(pattern = DATE_TIME_STYLE)
+    @DateTimeFormat(style = PATTERN_SSSSSSZ)
+    @JsonFormat(pattern = PATTERN_SSSSSSZ)
     var createdAt: LocalDateTime,
-    @DateTimeFormat(style = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSX")
+    @DateTimeFormat(style = PATTERN_SSSSSSZ)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_SSSSSSX)
     @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
     @field:JsonDeserialize(using = CustomOffsetDateTimeDeserializer::class)
     var scheduledAt: OffsetDateTime?,
@@ -31,4 +31,4 @@ class JobHistory (
     var recurringJobId: String?,
     @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
     var reason: String?,
-    )
+)

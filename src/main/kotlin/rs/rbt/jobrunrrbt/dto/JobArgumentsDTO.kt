@@ -1,10 +1,12 @@
 package rs.rbt.jobrunrrbt.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import rs.rbt.jobrunrrbt.helper.ARG_DATA
+import rs.rbt.jobrunrrbt.helper.ARG_ROW
 
-class JobArgumentsDTO (
-    @JsonProperty("argRow")
+class JobArgumentsDTO(
+    @JsonProperty(ARG_ROW)
     val argRow: Int,
-    @JsonProperty("argData")
+    @JsonProperty(ARG_DATA)
     val argData: String?
-    )
+)

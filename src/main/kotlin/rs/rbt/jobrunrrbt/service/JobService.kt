@@ -385,7 +385,7 @@ private fun createJob(jobSignature: String, jobArguments: Array<JobArgumentsDTO>
 
     val staticFieldAndMethodName = Regex("[A-Z][a-z]*\\.(.*)\\(").find(jobSignature)!!.groupValues[1]
 
-    val staticFieldName = staticFieldAndMethodName.substringBeforeLast(".")
+    val staticFieldName = staticFieldAndMethodName.substringBeforeLast(".","")
     val methodName = staticFieldAndMethodName.substringAfterLast(".")
 
     val jobName = Regex(".*\\(").find(jobSignature)!!.value + argumentList.joinToString(",") + ")"

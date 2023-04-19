@@ -381,11 +381,15 @@ private fun createJob(jobSignature: String, jobArguments: Array<JobArgumentsDTO>
         argumentList.add(element.argData)
     }
 
-    val jobDetailsClassName = Regex("([a-z]+\\.[a-z]+\\.[A-Z][a-zA-Z0-9_]*)").find(jobSignature)!!.value
+    val jobDetailsClassName = Regex("([a-z]+\\.[a-z0-9.?]+\\.[A-Z][a-zA-Z0-9_]*)").find(jobSignature)!!.value
 
     val staticFieldAndMethodName = Regex("[A-Z][a-z]*\\.(.*)\\(").find(jobSignature)!!.groupValues[1]
 
-    val staticFieldName = staticFieldAndMethodName.substringBeforeLast(".","")
+    var staticFieldName: String? = null
+
+    if (staticFieldAndMethodName.substringBeforeLast(".", "") != "")
+        staticFieldName = staticFieldAndMethodName.substringBeforeLast(".", "")
+
     val methodName = staticFieldAndMethodName.substringAfterLast(".")
 
     val jobName = Regex(".*\\(").find(jobSignature)!!.value + argumentList.joinToString(",") + ")"

@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import org.springframework.format.annotation.DateTimeFormat
-import rs.rbt.jobrunrrbt.helper.AT_CLASS
-import rs.rbt.jobrunrrbt.helper.CustomOffsetDateTimeDeserializer
-import rs.rbt.jobrunrrbt.helper.PATTERN_SSSSSSX
-import rs.rbt.jobrunrrbt.helper.PATTERN_SSSSSSZ
+import rs.rbt.jobrunrrbt.helper.*
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
@@ -21,7 +18,8 @@ class JobHistory(
     var state: String,
     @DateTimeFormat(style = PATTERN_SSSSSSZ)
     @JsonFormat(pattern = PATTERN_SSSSSSZ)
-    var createdAt: LocalDateTime,
+    @field:JsonDeserialize(using = CustomLocalDateTimeDeserializer::class)
+    var createdAt: LocalDateTime?,
     @DateTimeFormat(style = PATTERN_SSSSSSZ)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_SSSSSSX)
     @JsonInclude(value = JsonInclude.Include.NON_EMPTY)

@@ -79,11 +79,25 @@ class CustomOffsetDateTimeDeserializer : JsonDeserializer<OffsetDateTime>() {
             OffsetDateTime.parse(str)
         } catch (e: DateTimeParseException) {
             try {
-                val formatter = DateTimeFormatter.ofPattern(PATTERN_SSZ)
+                val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
                 LocalDateTime.parse(str, formatter).atOffset(ZoneOffset.UTC)
             } catch (e: DateTimeParseException) {
                 null
             }
+        }
+    }
+}
+
+class CustomLocalDateTimeDeserializer : JsonDeserializer<LocalDateTime>() {
+    override fun deserialize(p: JsonParser?, ctxt: DeserializationContext?): LocalDateTime? {
+        val str = p?.text?.trim()
+        if (str.isNullOrEmpty()) {
+            return null
+        }
+        return try {
+            LocalDateTime.parse(str)
+        } catch (e: DateTimeParseException) {
+            null
         }
     }
 }

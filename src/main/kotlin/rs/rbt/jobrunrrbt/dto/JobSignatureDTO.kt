@@ -13,6 +13,6 @@ class JobSignatureDTO(
     val jobArguments: Array<JobArgumentsDTO>,
     @JsonProperty(JOB_DATE)
     @DateTimeFormat(style = PATTERN_SSSSSSZ)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_SSSSSSXXX)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS[S][S][S][S][S][S]XXX")
     val jobTime: OffsetDateTime
 )

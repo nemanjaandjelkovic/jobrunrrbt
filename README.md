@@ -17,7 +17,8 @@ Jobs status and functionality for jobs status.
 | Failed | Jobs that ran in to some sort of error and did not finish processing successfully.| They can be edited, reenqueued and deleted. |
 | Deleted | Jobs that were automatically deleted by the system, or deleted by the user. |They can be searched.|
 
-
+Dashboard also allows user preview of jobs that are in database, as well as options to configure them. This includes changing scheduled time where applicable as well as package,class,method and arguments.
+There is also an option to batch reenqueue jobs by providing csv with job id's.
 ## Installation and Configuration
 The easiest way to install application and dashboard is with docker.
 
@@ -105,15 +106,15 @@ spring.datasource.password=DATABASE_PASSWORD
 
 ## Documentation
 
-If you want to see documentation, you need to build application and start dependencies dokka.
+If you want to see documentation, you need to build application first and use dokka plugin.
 
-In documentation, you can see all descriptions of functions and models.
+In documentation, you can see description of functions and models.
 
-The Swagger UI page will then be available at http://server:port/swagger-ui/index.html  
+The Swagger UI page will then be available at `http://server:port/swagger-ui/index.html`  
 
-The OpenAPI description will be available at the following url for json format: http://server:port/v3/api-docs 
+The OpenAPI description will be available at the following url for json format: `http://server:port/v3/api-docs `
 
-Documentation can be available in yaml format as well, on the following path : http://server:port/v3/api-docs.yaml
+Documentation can be available in yaml format as well, on the following path : `http://server:port/v3/api-docs.yaml`
 
 - server: The server name or IP
 - port: The server port

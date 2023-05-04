@@ -5,10 +5,8 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import rs.rbt.jobrunrrbt.dto.JobArgumentsDTO
-import rs.rbt.jobrunrrbt.dto.JobDTO
-import rs.rbt.jobrunrrbt.dto.JobSignatureDTO
-import rs.rbt.jobrunrrbt.dto.PageInfoDTO
+import rs.rbt.jobrunrrbt.dto.*
+import rs.rbt.jobrunrrbt.exception.IdNotFoundException
 import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.model.*
 import rs.rbt.jobrunrrbt.repository.JobrunrJobRepository
@@ -22,8 +20,53 @@ import java.util.*
 @Service
 class JobService {
 
+    /* The above code is using the `@Autowired` annotation to inject an instance of the
+    `JobrunrJobRepository` class into the current class. The `lateinit` keyword is used to indicate
+    that the variable will be initialized later, after the class is constructed. */
     @Autowired
     lateinit var jobrunrJobRepository: JobrunrJobRepository
+
+    /**
+     * The function searches for job data based on state, offset, limit, order, and optional parameters
+     * and values.
+     *
+     * @param state The state parameter is a string that represents the state for which the job search
+     * is being performed.
+     * @param offset The starting index of the results to be returned.
+     * @param limit The maximum number of results to be returned in a single query.
+     * @param order The order parameter specifies the order in which the results should be returned. It
+     * could be ascending or descending order based on a particular field.
+     * @param parameter The parameter is a string that specifies the type of search to be performed. It
+     * can be either "CLASS", "METHOD", or any other string value.
+     * @param value The value parameter is a string that represents the value to search for in the
+     * specified parameter (class, method, or both) in the job data.
+     * @return The function `searchByStateAndParams` returns a `JobDTO` object.
+     */
+    fun searchByStateAndParams(
+        state: String,
+        offset: Int,
+        limit: Int,
+        order: String,
+        parameter: String?,
+        value: String?
+    ): JobDTO {
+        if (parameter.isNullOrBlank() || value.isNullOrBlank())
+            return returnAllJobsWhereStateMatches(state, offset, limit, order)
+
+        return when (parameter) {
+            CLASS -> {
+                returnAllJobsWhereClassMatches(state, value, offset / limit, limit, order)
+            }
+
+            METHOD -> {
+                returnAllJobsWhereMethodMatches(state, value, offset / limit, limit, order)
+            }
+
+            else -> {
+                returnAllJobsWhereClassOrMethodMatch(state, value, offset / limit, limit, order)
+            }
+        }
+    }
 
     /**
      *  This function returns a list of jobs where the state matches the given state
@@ -68,10 +111,7 @@ class JobService {
     fun returnAllJobsWhereClassMatches(state: String, value: String, offset: Int, limit: Int, order: String): JobDTO {
 
         val sort = getSortFromOrder(order)
-
-        val leadingLetter = value.first()
-        val restOfValue = value.drop(1)
-        val regex = "^(.+[$leadingLetter].*$restOfValue.*\\..*\\(.+)"
+        val regex = "^(.+\\.${value}.*\\..*\\(.+)"
 
         val jobList: List<JobrunrJob> =
             jobrunrJobRepository.findJobsWhereClassMatches(state, regex, PageRequest.of(offset, limit, sort))
@@ -105,7 +145,7 @@ class JobService {
      */
     fun returnAllJobsWhereClassOrMethodMatch(
         state: String, value: String, offset: Int, limit: Int, order: String
-    ): String {
+    ): JobDTO {
 
         val sort = getSortFromOrder(order)
 
@@ -117,17 +157,15 @@ class JobService {
         val pageInfoDTO = createPageInfoDTO(total, limit, offset)
 
 
-        return serialize(
-            JobDTO(
-                offset,
-                pageInfoDTO.hasNext,
-                pageInfoDTO.hasPrevious,
-                returnList,
-                limit,
-                offset,
-                total,
-                pageInfoDTO.totalPages
-            )
+        return JobDTO(
+            offset,
+            pageInfoDTO.hasNext,
+            pageInfoDTO.hasPrevious,
+            returnList,
+            limit,
+            offset,
+            total,
+            pageInfoDTO.totalPages
         )
 
     }
@@ -145,7 +183,6 @@ class JobService {
     fun returnAllJobsWhereMethodMatches(state: String, value: String, offset: Int, limit: Int, order: String): JobDTO {
 
         val sort = getSortFromOrder(order)
-
         val regex = "^(.+[A-Z].+\\.$value.*\\(.+)"
 
         val jobList = jobrunrJobRepository.findJobsWhereMethodMatches(state, regex, PageRequest.of(offset, limit, sort))
@@ -168,80 +205,72 @@ class JobService {
         )
     }
 
+    /**
+     * This Kotlin function returns a list of unique job signatures from a job repository.
+     *
+     * @return A list of unique job signatures is being returned.
+     */
     fun returnUniqueJobSignatures(): List<String> {
         return jobrunrJobRepository.findUniqueJobSignatures()
     }
 
-    /**
-     *  This function updates the job with the given id with the given new package name, new method
-     * name, new class name and new scheduled time
-     *
-     * @param id The id of the job you want to update
-     * @param newPackageName The new package name of the job
-     * @param newMethodName The name of the method that will be called when the job is executed.
-     * @param newClassName The new class name of the job
-     * @param newScheduledTime The new time you want to schedule the job for.
-     */
+    /* Kotlin function that updates a job in a job queue. It takes in an ID of the
+    job to be updated and a DTO containing the changes to be made to the job. The function first
+    retrieves the job from the job queue repository using the ID provided. It then checks if the job
+    is in the "ENQUEUED" or "PROCESSING" state, and if so, throws an exception as such jobs cannot
+    be modified. */
     @Transactional
-    fun updateJobWithTime(
+    fun updateJob(
         id: String,
-        newPackageName: String,
-        newMethodName: String,
-        newClassName: String,
-        newScheduledTime: OffsetDateTime?
-    ) {
+        changes: UpdateJobReceivedDTO
+    ): String {
 
-        if (jobrunrJobRepository.existsById(id)) {
+        val job = jobrunrJobRepository.findById(id).orElseThrow { IdNotFoundException("Job with ID: $id not found") }
 
-            val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(id)
-            var jobJson: JobJson = deserialize(job.get().jobasjson!!)
+        if (job.state.equals("ENQUEUED") || job.state.equals("PROCESSING"))
+            throw IllegalArgumentException("Jobs that are enqueued or processing can not be modified")
 
-            jobJson = updateJobJsonFields(jobJson, newPackageName, newClassName, newMethodName)
+        val jobJson: JobJson = deserialize(job.jobasjson!!)
+        val newJobJson = updateJobJsonFields(jobJson, changes.packageName, changes.className, changes.methodName)
 
-            if (newScheduledTime != null) {
-                jobJson.jobHistory[jobJson.jobHistory.size - 1].scheduledAt = newScheduledTime
+        if (changes.scheduledTime != null) {
+            when (job.state) {
+                "SCHEDULED" -> {
+                    newJobJson.jobHistory.last().scheduledAt = changes.scheduledTime
+                    job.scheduledat = convertToLocalDateTime(changes.scheduledTime)
+                }
+
+                else -> {
+                    newJobJson.jobHistory.add(
+                        JobHistory(
+                            atClass = DEFAULT_AT_CLASS,
+                            state = STATE_SCHEDULED,
+                            createdAt = LocalDateTime.now(ZoneId.of("UTC")),
+                            scheduledAt = changes.scheduledTime,
+                            recurringJobId = null,
+                            reason = null
+                        )
+                    )
+                }
             }
-
-            val newJobJson: String = serialize(jobJson)
-
-            jobrunrJobRepository.updateJobSignature((id), jobJson.jobSignature)
-            jobrunrJobRepository.updateJobAsJson(id, newJobJson)
-            jobJson.jobHistory[jobJson.jobHistory.size - 1].scheduledAt?.let { newTime ->
-                jobrunrJobRepository.updateScheduledTime(
-                    id,
-                    newTime
-                )
-            }
-
+            newJobJson.jobHistory.last().scheduledAt = changes.scheduledTime
+            job.scheduledat = convertToLocalDateTime(changes.scheduledTime)
         }
+
+        job.jobsignature = jobJson.jobSignature
+        job.jobasjson = serialize(newJobJson)
+
+        return job.id!!
     }
 
-    /**
-     * It updates the job's package name, class name and method name in the database
-     *
-     * @param id The id of the job you want to update
-     * @param newPackageName The new package name of the job
-     * @param newMethodName The new method name of the job
-     * @param newClassName The new class name of the job
-     */
-    @Transactional
-    fun updateJob(id: String, newPackageName: String, newMethodName: String, newClassName: String) {
 
-        if (jobrunrJobRepository.existsById(id)) {
-
-            val job: Optional<JobrunrJob> = jobrunrJobRepository.findById(id)
-            var jobJson: JobJson = deserialize(job.get().jobasjson!!)
-
-            jobJson = updateJobJsonFields(jobJson, newPackageName, newClassName, newMethodName)
-
-            val newJobJson: String = serialize(jobJson)
-
-            jobrunrJobRepository.updateJobSignature((id), jobJson.jobSignature)
-            jobrunrJobRepository.updateJobAsJson(id, newJobJson)
-
-        }
-    }
-
+    /* Kotlin function that creates jobs based on a list of JobSignatureDTO
+    objects. It first checks if the job signature is valid using a regular expression. If it is
+    valid, it checks if there are any possible duplicates of the job in the job repository. If there
+    are duplicates, it checks if the job arguments are the same and updates the scheduled time of
+    the duplicate job. If there are no duplicates, it creates a new job with the given signature,
+    arguments, and scheduled time. The function uses the Jobrunr library to interact with the job
+    repository. The @Transactional annotation */
     @Transactional
     fun createJobs(jobs: List<JobSignatureDTO>) {
 
@@ -328,7 +357,7 @@ private fun makeReturnList(jobList: List<JobrunrJob>): List<JobJson> {
 private fun createPageInfoDTO(total: Int, limit: Int, offset: Int): PageInfoDTO {
 
     val totalPages = (total - 1) / limit + 1
-    val hasNext = offset < totalPages
+    val hasNext = offset < totalPages - 1
     val hasPrevious = offset > 0
 
     return PageInfoDTO(total, totalPages, hasNext, hasPrevious)
@@ -349,7 +378,8 @@ private fun updateJobJsonFields(
     jobJson: JobJson, newPackageName: String, newClassName: String, newMethodName: String
 ): JobJson {
 
-    val newJobSignature = "$newPackageName.$newClassName.$newMethodName(${jobJson.jobDetails.jobParameters})"
+    val newJobSignature =
+        "$newPackageName.$newClassName.$newMethodName(${jobJson.jobDetails.jobParameters.joinToString(",")})"
 
     val splitMethodName = newMethodName.split(".")
     val splitLength = splitMethodName.size - 1
@@ -364,6 +394,17 @@ private fun updateJobJsonFields(
     return jobJson
 }
 
+/**
+ * This Kotlin function creates a JobrunrJob object with specified parameters and returns it.
+ *
+ * @param jobSignature A string representing the signature of the job, which includes the class name,
+ * method name, and argument types.
+ * @param jobArguments jobArguments is an array of JobArgumentsDTO objects, which contain data for the
+ * arguments of the job being created.
+ * @param jobTime jobTime is an OffsetDateTime object representing the time at which the job is
+ * scheduled to run.
+ * @return a JobrunrJob object.
+ */
 private fun createJob(jobSignature: String, jobArguments: Array<JobArgumentsDTO>, jobTime: OffsetDateTime): JobrunrJob {
     val job = JobrunrJob()
 
@@ -419,15 +460,23 @@ private fun createJob(jobSignature: String, jobArguments: Array<JobArgumentsDTO>
     job.state = STATE_SCHEDULED
     job.createdat = creationTime
     job.updatedat = creationTime
-    job.scheduledat = LocalDateTime.parse(
-        jobTime.atZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(PATTERN_SSZ)),
-        DateTimeFormatter.ofPattern(PATTERN_SSZ)
-    )
+    job.scheduledat = convertToLocalDateTime(jobTime)
     job.recurringjobid = null
 
     return job
 }
 
+/**
+ * The function checks for duplicates in a list of Jobrunr jobs based on matching job arguments.
+ *
+ * @param jobArguments An array of JobArgumentsDTO objects, which likely contain arguments for a job
+ * that needs to be executed.
+ * @param listOfPossibleDuplicates A list of JobrunrJob objects that are potential duplicates of the
+ * job being checked for duplicates.
+ * @return The function `checkForDuplicates` returns a `JobrunrJob` object if a duplicate job is found
+ * in the `listOfPossibleDuplicates` that matches all the arguments in `jobArguments`. If no duplicate
+ * is found, the function returns `null`.
+ */
 private fun checkForDuplicates(
     jobArguments: Array<JobArgumentsDTO>, listOfPossibleDuplicates: List<JobrunrJob>
 ): JobrunrJob? {
@@ -442,6 +491,18 @@ private fun checkForDuplicates(
     return null
 }
 
+/**
+ * The function checks if all arguments in a given array match the corresponding parameters in a job
+ * JSON object.
+ *
+ * @param jobArguments An array of JobArgumentsDTO objects, which likely contains data passed as
+ * arguments to a job.
+ * @param jobJson JobJson is likely a data class or object that represents a JSON object containing
+ * information about a job. It probably has a property called "jobDetails" which in turn has a property
+ * called "jobParameters" that is an array of objects representing the parameters of the job.
+ * @return a boolean value. It returns `true` if all the job arguments in the `jobArguments` array
+ * match the corresponding job objects in the `jobJson` parameter, and `false` otherwise.
+ */
 private fun checkIfAllArgumentsMatch(jobArguments: Array<JobArgumentsDTO>, jobJson: JobJson): Boolean {
 
     jobJson.jobDetails.jobParameters.forEachIndexed { index, jobParameter ->
@@ -450,4 +511,20 @@ private fun checkIfAllArgumentsMatch(jobArguments: Array<JobArgumentsDTO>, jobJs
         }
     }
     return true
+}
+
+/**
+ * The function converts an OffsetDateTime object to a LocalDateTime object in Kotlin.
+ *
+ * @param timeToConvert `timeToConvert` is an instance of `OffsetDateTime` class, which represents a
+ * date-time with an offset from UTC/Greenwich in the ISO-8601 calendar system. It contains information
+ * about the date, time, and offset from UTC/Greenwich.
+ * @return The function `convertToLocalDateTime` is returning a `LocalDateTime` object.
+ */
+private fun convertToLocalDateTime(timeToConvert: OffsetDateTime): LocalDateTime {
+
+    return LocalDateTime.parse(
+        timeToConvert.atZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(PATTERN_SSZ)),
+        DateTimeFormatter.ofPattern(PATTERN_SSZ)
+    )
 }

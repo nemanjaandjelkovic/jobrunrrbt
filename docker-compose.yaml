@@ -19,6 +19,9 @@ services:
     ports:
       - "8000:8000"
       - "8080:8080"
+      - "5005:5005"
+    environment:
+      - JVM_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
   jobrunr-dashboard:
     image: 'dashboard'
     container_name: dashboard

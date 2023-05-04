@@ -34,16 +34,13 @@ In `application.properties` must set configuration for JobRunr and database conf
 spring.datasource.url=jdbc:postgresql://localhost:DATABASE_PORT/DATABASE_NAME
 spring.datasource.username=DATABASE_USERNAME
 spring.datasource.password=DATABASE_PASSWORD
-org.jobrunr.background-job-server.enabled=true
-org.jobrunr.dashboard.enabled=true
-org.jobrunr.job-scheduler.enabled=true
-org.jobrunr.dashboard.port=8000
+
 ```
 
 ### Dashboard configuration
 
 
-In `package.json` must change server name where is hosted application:
+In `package.json` change server name to where the application is hosted:
 
 ```bash
 "proxy": "http://server:8000",
@@ -66,7 +63,7 @@ git clone https://github.com/nemanjaandjelkovic/jobrunrrbt.git
 
 ### Dashboard
 
-Before start dashboard you need to run backend for full functionality.
+Before running the dashboard you need to run backend for full functionality.
 
 - **Install node version 14+**
 

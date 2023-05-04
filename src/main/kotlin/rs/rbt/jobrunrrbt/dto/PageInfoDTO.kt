@@ -1,7 +1,7 @@
 package rs.rbt.jobrunrrbt.dto
 
 /**  This class is a data transfer object (DTO) that contains information about the current page of data. */
-class PageInfoDTO(
+data class PageInfoDTO(
 
     val total: Int,
     val totalPages: Int,

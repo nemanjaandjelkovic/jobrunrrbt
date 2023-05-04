@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 
 /**  It's a Kotlin data class that represents a job in the queue */
 @JsonIgnoreProperties(ignoreUnknown = true)
-class JobJson(
+data class JobJson(
     var version: Long,
     var jobSignature: String,
     var jobName: String,

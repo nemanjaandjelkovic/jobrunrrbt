@@ -12,7 +12,7 @@ import java.time.OffsetDateTime
 
 /**  `JobHistory` is a class that represents a job history record */
 @JsonIgnoreProperties(ignoreUnknown = true)
-class JobHistory(
+data class JobHistory(
     @JsonProperty(AT_CLASS)
     var atClass: String,
     var state: String,

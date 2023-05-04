@@ -11,7 +11,7 @@ import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.service.JobService
 
 
-/* This code defines a Kotlin class called `JobController` that serves as a REST API endpoint for
+/** This code defines a Kotlin class called `JobController` that serves as a REST API endpoint for
 handling HTTP requests related to jobs. */
 @CrossOrigin("http://localhost:3000")
 @RestController
@@ -56,11 +56,8 @@ class JobController {
         @RequestParam(value = SEARCH_PARAMETER, required = false) parameter: String?,
         @RequestParam(value = SEARCH_VALUE, required = false) value: String?,
     ): ResponseEntity<JobDTO> {
-
         checkIfValidJobState(state)
-
         return ResponseEntity.ok(jobService.searchByStateAndParams(state, offset, limit, order, parameter, value))
-
     }
 
     /**

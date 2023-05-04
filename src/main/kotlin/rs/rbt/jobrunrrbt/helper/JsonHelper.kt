@@ -68,7 +68,7 @@ fun deserialize(json: String): JobJson {
     return mapper.readValue(json)
 }
 
-/* This is a custom deserializer class in Kotlin for parsing and converting a string representation of
+/** This is a custom deserializer class in Kotlin for parsing and converting a string representation of
 a date and time with an offset into an OffsetDateTime object. */
 class CustomOffsetDateTimeDeserializer : JsonDeserializer<OffsetDateTime>() {
     override fun deserialize(p: JsonParser?, ctxt: DeserializationContext?): OffsetDateTime? {
@@ -90,7 +90,7 @@ class CustomOffsetDateTimeDeserializer : JsonDeserializer<OffsetDateTime>() {
 }
 
 
-/* This is a custom deserializer class in Kotlin that converts a JSON string to a LocalDateTime object. */
+/** This is a custom deserializer class in Kotlin that converts a JSON string to a LocalDateTime object. **/
 class CustomLocalDateTimeDeserializer : JsonDeserializer<LocalDateTime>() {
     override fun deserialize(p: JsonParser?, ctxt: DeserializationContext?): LocalDateTime? {
         val str = p?.text?.trim()

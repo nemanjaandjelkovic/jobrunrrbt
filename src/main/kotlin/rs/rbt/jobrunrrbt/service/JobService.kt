@@ -20,7 +20,7 @@ import java.util.*
 @Service
 class JobService {
 
-    /* The above code is using the `@Autowired` annotation to inject an instance of the
+    /** The above code is using the `@Autowired` annotation to inject an instance of the
     `JobrunrJobRepository` class into the current class. The `lateinit` keyword is used to indicate
     that the variable will be initialized later, after the class is constructed. */
     @Autowired
@@ -214,7 +214,7 @@ class JobService {
         return jobrunrJobRepository.findUniqueJobSignatures()
     }
 
-    /* Kotlin function that updates a job in a job queue. It takes in an ID of the
+    /** Kotlin function that updates a job in a job queue. It takes in an ID of the
     job to be updated and a DTO containing the changes to be made to the job. The function first
     retrieves the job from the job queue repository using the ID provided. It then checks if the job
     is in the "ENQUEUED" or "PROCESSING" state, and if so, throws an exception as such jobs cannot
@@ -264,7 +264,7 @@ class JobService {
     }
 
 
-    /* Kotlin function that creates jobs based on a list of JobSignatureDTO
+    /** Kotlin function that creates jobs based on a list of JobSignatureDTO
     objects. It first checks if the job signature is valid using a regular expression. If it is
     valid, it checks if there are any possible duplicates of the job in the job repository. If there
     are duplicates, it checks if the job arguments are the same and updates the scheduled time of

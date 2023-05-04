@@ -9,6 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * a collection of `JobSignatureDTO` objects.
  */
 data class JobSignaturesDTO(
-    @JsonProperty()
+    @JsonProperty
     val list: List<JobSignatureDTO>
 )

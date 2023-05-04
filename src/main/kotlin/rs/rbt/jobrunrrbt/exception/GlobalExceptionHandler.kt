@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 
-/* The GlobalExceptionHandler class handles exceptions for specific types and returns an appropriate
+/** The GlobalExceptionHandler class handles exceptions for specific types and returns an appropriate
 error message. */
 @ControllerAdvice
 class GlobalExceptionHandler {

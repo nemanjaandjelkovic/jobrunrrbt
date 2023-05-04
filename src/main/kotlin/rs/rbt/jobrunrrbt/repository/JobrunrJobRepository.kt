@@ -9,7 +9,7 @@ import java.util.*
 
 interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
 
-    /* This function is querying the database to find all Jobrunr jobs with a specific job signature
+    /** This function is querying the database to find all Jobrunr jobs with a specific job signature
     that are not currently in the "ENQUEUED" or "PROCESSING" state. It uses a native SQL query with
     a parameterized job signature value. The function returns a list of JobrunrJob objects that
     match the query criteria. */

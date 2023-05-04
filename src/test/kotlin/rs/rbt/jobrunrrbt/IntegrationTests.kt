@@ -12,7 +12,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.*
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.util.UriComponentsBuilder
 import rs.rbt.jobrunrrbt.JobrunrrbtApplication
 import rs.rbt.jobrunrrbt.dto.JobArgumentsDTO
@@ -52,7 +51,7 @@ class MyIntegrationTest {
     var port: Int = 0
 
     @BeforeAll
-    fun setup() {
+    fun configureFlyway() {
         Flyway.configure()
             .dataSource(dataSource)
             .baselineOnMigrate(true)
@@ -61,13 +60,13 @@ class MyIntegrationTest {
     }
 
     @BeforeEach
-    fun setupData() {
+    fun resetData() {
         jdbcTemplateObject.update("delete from jobrunr_jobs")
         populateJobrunrJobs()
     }
 
     @Test
-    fun `test if job signatures are returned accordingly`() {
+    fun `unique-signatures endpoint`() {
         val response =
             restTemplate.getForObject("http://localhost:${port}/api/v1/jobs/unique-signatures", List::class.java)
         val data =
@@ -77,20 +76,20 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `test when state is correct`() {
+    fun `search by state with correct parameter`() {
         val response = restTemplate.getForObject("http://localhost:${port}/api/v1/jobs/SUCCEEDED", JobDTO::class.java)
         assertThat(response).isEqualTo(singleStateJobDTO)
     }
 
     @Test
-    fun `test when state is incorrect`() {
+    fun `search by state with incorrect parameter`() {
         val response =
             restTemplate.getForObject("http://localhost:${port}/api/v1/jobs/ILLEGAL-STATE", IllegalJobState::class.java)
         assertThat(response.message).isEqualTo("ILLEGAL-STATE is not a valid job state")
     }
 
     @Test
-    fun `test state and class exists`() {
+    fun `search by state and class`() {
 
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs/SUCCEEDED")
@@ -107,7 +106,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `test state and class doesnt exist`() {
+    fun `search by state and class that does not exist`() {
 
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs/SUCCEEDED")
@@ -124,7 +123,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `test state and method`() {
+    fun `search by state and method`() {
 
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs/SUCCEEDED")
@@ -141,7 +140,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `test state and method doesnt exist`() {
+    fun `search by state and method that does not exist`() {
 
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs/SUCCEEDED")
@@ -158,7 +157,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `test state and class or method`() {
+    fun `search by state and both class and method`() {
 
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs/SUCCEEDED")
@@ -175,7 +174,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `test state and class or method doesnt exist`() {
+    fun `search by state and class where method does not exist`() {
 
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs/SUCCEEDED")
@@ -192,7 +191,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `update job by id without time`() {
+    fun `update job using id, package name, class name and method name`() {
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs/${jobJson1.id}")
             .build()
@@ -220,7 +219,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `update job by id without time when id is wrong`() {
+    fun `update job using id, package name, class name and method name when id does not exist`() {
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs/wrong-id")
             .build()
@@ -234,7 +233,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `update job by id without time when state is wrong`() {
+    fun `update job using id, package name, class name and method name when state is incorrect`() {
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs/${jobJson5.id}")
             .build()
@@ -248,7 +247,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `update job by id with time`() {
+    fun `update job using id, package name, class name, method name and time`() {
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs/${jobJson4.id}")
             .build()
@@ -283,7 +282,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `insert multiple jobs without duplicate jobsignature`() {
+    fun `schedule list of jobs using jobsignature, parameters of given job, and time when jobsignature is unique`() {
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs")
             .build()
@@ -333,7 +332,7 @@ class MyIntegrationTest {
     }
 
     @Test
-    fun `insert multiple jobs with duplicate jobsignature`() {
+    fun `schedule list of jobs using jobsignature, parameters of given job, and time when jobsignature is not unique`() {
         val uri = UriComponentsBuilder
             .fromUriString("http://localhost:${port}/api/v1/jobs")
             .build()

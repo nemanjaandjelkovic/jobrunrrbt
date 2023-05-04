@@ -9,10 +9,9 @@ import rs.rbt.jobrunrrbt.helper.PACKAGE_NAME
 import rs.rbt.jobrunrrbt.helper.SCHEDULED_TIME
 import java.time.OffsetDateTime
 
-/* The UpdateJobReceivedDTO class is a data transfer object that contains information about a scheduled
+/** The UpdateJobReceivedDTO class is a data transfer object that contains information about a scheduled
 job update. */
 class UpdateJobReceivedDTO(
-
     @JsonProperty(PACKAGE_NAME)
     val packageName: String,
     @JsonProperty(METHOD_NAME)

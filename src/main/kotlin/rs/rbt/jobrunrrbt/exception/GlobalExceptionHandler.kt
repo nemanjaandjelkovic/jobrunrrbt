@@ -29,7 +29,7 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     fun handleIllegalJobState(ex: IllegalJobState): ApiError {
-        return ApiError(HttpStatus.NOT_FOUND.value(), ex.message ?: "Invalid Job state")
+        return ApiError(HttpStatus.BAD_REQUEST.value(), ex.message ?: "Invalid Job state")
     }
 
 }

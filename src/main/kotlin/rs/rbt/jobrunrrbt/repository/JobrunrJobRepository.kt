@@ -10,14 +10,14 @@ import java.util.*
 interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
 
     /** This function is querying the database to find all Jobrunr jobs with a specific job signature
-    that are not currently in the "ENQUEUED" or "PROCESSING" state. It uses a native SQL query with
+    that are in the "SCHEDULED" state. It uses a native SQL query with
     a parameterized job signature value. The function returns a list of JobrunrJob objects that
     match the query criteria. */
     @Query(
         """select * from jobrunr_jobs j 
-        where j.jobsignature = ?1 and j.state not in ('ENQUEUED','PROCESSING')""", nativeQuery = true
+        where j.jobsignature = ?1 and j.state = 'SCHEDULED'""", nativeQuery = true
     )
-    fun findJobrunrJobsBySignatureIfNotBeingProcessed(jobSignature: String): List<JobrunrJob>
+    fun findJobrunrJobsBySignatureIfScheduled(jobSignature: String): List<JobrunrJob>
 
     /**
      * `findJobrunrJobsByState` returns a `List<JobrunrJob>` and takes a `String` and a `Pageable` as

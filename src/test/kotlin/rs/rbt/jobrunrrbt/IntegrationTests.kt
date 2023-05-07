@@ -85,7 +85,7 @@ class MyIntegrationTest {
     fun `search by state with incorrect parameter`() {
         val response =
             restTemplate.getForObject("http://localhost:${port}/api/v1/jobs/ILLEGAL-STATE", IllegalJobState::class.java)
-        assertThat(response.message).isEqualTo("ILLEGAL-STATE is not a valid job state")
+        assertThat(response.message).isEqualTo("No enum constant rs.rbt.jobrunrrbt.model.State.ILLEGAL-STATE")
     }
 
     @Test
@@ -193,17 +193,17 @@ class MyIntegrationTest {
     @Test
     fun `update job using id, package name, class name and method name`() {
         val uri = UriComponentsBuilder
-            .fromUriString("http://localhost:${port}/api/v1/jobs/${jobJson1.id}")
+            .fromUriString("http://localhost:${port}/api/v1/jobs/${jobJsonPrintJob1.id}")
             .build()
             .toUri()
         val response =
             restTemplate.exchange(uri, HttpMethod.PUT, HttpEntity(jobChangeRequestWithoutTimeDTO), String::class.java)
 
-        assertThat(response.body).isEqualTo(jobJson1.id)
+        assertThat(response.body).isEqualTo(jobJsonPrintJob1.id)
 
         val queriedJobSignature = jdbcTemplateObject.queryForObject(
             "SELECT jobSignature FROM jobrunr_jobs WHERE id = ?",
-            arrayOf(jobJson1.id),
+            arrayOf(jobJsonPrintJob1.id),
             String::class.java
         )
 
@@ -211,7 +211,7 @@ class MyIntegrationTest {
 
         val queriedJobJson = jdbcTemplateObject.queryForObject(
             "SELECT jobAsJson FROM jobrunr_jobs WHERE id = ?",
-            arrayOf(jobJson1.id),
+            arrayOf(jobJsonPrintJob1.id),
             String::class.java
         )
 
@@ -235,7 +235,7 @@ class MyIntegrationTest {
     @Test
     fun `update job using id, package name, class name and method name when state is incorrect`() {
         val uri = UriComponentsBuilder
-            .fromUriString("http://localhost:${port}/api/v1/jobs/${jobJson5.id}")
+            .fromUriString("http://localhost:${port}/api/v1/jobs/${jobJsonPrintlnJob5.id}")
             .build()
             .toUri()
         val response =
@@ -249,18 +249,18 @@ class MyIntegrationTest {
     @Test
     fun `update job using id, package name, class name, method name and time`() {
         val uri = UriComponentsBuilder
-            .fromUriString("http://localhost:${port}/api/v1/jobs/${jobJson4.id}")
+            .fromUriString("http://localhost:${port}/api/v1/jobs/${jobJsonPrintlnJob4.id}")
             .build()
             .toUri()
         val response =
             restTemplate.exchange(uri, HttpMethod.PUT, HttpEntity(jobChangeRequestWithTimeDTO), String::class.java)
 
-        assertThat(response.body).isEqualTo(jobJson4.id)
+        assertThat(response.body).isEqualTo(jobJsonPrintlnJob4.id)
 
 
         val queriedJobSignature = jdbcTemplateObject.queryForObject(
             "SELECT jobSignature FROM jobrunr_jobs WHERE id = ?",
-            arrayOf(jobJson4.id),
+            arrayOf(jobJsonPrintlnJob4.id),
             String::class.java
         )
 
@@ -269,7 +269,7 @@ class MyIntegrationTest {
 
         val queriedScheduledAt = jdbcTemplateObject.queryForObject(
             "SELECT scheduledAt FROM jobrunr_jobs WHERE id = ?",
-            arrayOf(jobJson4.id),
+            arrayOf(jobJsonPrintlnJob4.id),
             LocalDateTime::class.java
         )
 
@@ -296,13 +296,13 @@ class MyIntegrationTest {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
 
-        val countOfJobSignature = jdbcTemplateObject.queryForObject(
+        val queriedJobSignature = jdbcTemplateObject.queryForObject(
             "SELECT jobsignature FROM jobrunr_jobs WHERE jobsignature = ?",
             arrayOf("com.example.Class.path.to.method(java.lang.String,java.lang.String)"),
             String::class.java
         )
 
-        assertThat(countOfJobSignature).isEqualTo("com.example.Class.path.to.method(java.lang.String,java.lang.String)")
+        assertThat(queriedJobSignature).isEqualTo("com.example.Class.path.to.method(java.lang.String,java.lang.String)")
 
         val queriedScheduledAt = jdbcTemplateObject.queryForObject(
             "SELECT scheduledAt FROM jobrunr_jobs WHERE jobSignature = ?",
@@ -312,7 +312,7 @@ class MyIntegrationTest {
 
         assertThat(queriedScheduledAt).isEqualTo(
             convertToLocalDateTime(
-                OffsetDateTime.of(2023, 4, 25, 17, 3, 40, 113, ZoneOffset.UTC)
+                OffsetDateTime.of(2023, 5, 25, 17, 3, 40, 113, ZoneOffset.UTC)
             )
         )
 
@@ -346,29 +346,29 @@ class MyIntegrationTest {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
 
-        val countOfJobSignature = jdbcTemplateObject.queryForObject(
+        val queriedJobSignature = jdbcTemplateObject.queryForObject(
             "SELECT jobsignature FROM jobrunr_jobs WHERE id = ?",
-            arrayOf(jobJson4.id),
+            arrayOf(jobJsonPrintlnJob4.id),
             String::class.java
         )
 
-        assertThat(countOfJobSignature).isEqualTo("java.lang.System.out.println(java.lang.String)")
+        assertThat(queriedJobSignature).isEqualTo("java.lang.System.out.println(java.lang.String)")
 
         val queriedScheduledAt = jdbcTemplateObject.queryForObject(
             "SELECT scheduledAt FROM jobrunr_jobs WHERE id = ?",
-            arrayOf(jobJson4.id),
+            arrayOf(jobJsonPrintlnJob4.id),
             LocalDateTime::class.java
         )
 
         assertThat(queriedScheduledAt).isCloseTo(
             convertToLocalDateTime(
-                OffsetDateTime.of(2023, 5, 24, 8, 7, 28, 361810, ZoneOffset.UTC)
+                OffsetDateTime.of(2023, 4, 24, 8, 7, 28, 361810, ZoneOffset.UTC)
             ), within(1, ChronoUnit.SECONDS)
         )
 
         val queriedJobJson = jdbcTemplateObject.queryForObject(
             "SELECT jobAsJson FROM jobrunr_jobs WHERE id = ?",
-            arrayOf(jobJson4.id),
+            arrayOf(jobJsonPrintlnJob4.id),
             String::class.java
         )
 
@@ -379,7 +379,7 @@ class MyIntegrationTest {
     }
 
 
-    final val jobJson1 = JobJson(
+    final val jobJsonPrintJob1 = JobJson(
         version = 1,
         jobSignature = "java.lang.System.out.print(java.lang.String)",
         jobName = "java.lang.System.out.print(job1)",
@@ -403,7 +403,7 @@ class MyIntegrationTest {
         metadata = null
     )
 
-    final val jobJson2 = JobJson(
+    final val jobJsonPrintJob2 = JobJson(
         version = 1,
         jobSignature = "java.lang.System.out.print(java.lang.String)",
         jobName = "java.lang.System.out.print(job2)",
@@ -427,7 +427,7 @@ class MyIntegrationTest {
         metadata = null
     )
 
-    final val jobJson3 = JobJson(
+    final val jobJsonPrintlnJob3 = JobJson(
         version = 1,
         jobSignature = "java.lang.System.out.println(java.lang.String)",
         jobName = "java.lang.System.out.println(job3)",
@@ -451,7 +451,7 @@ class MyIntegrationTest {
         metadata = null
     )
 
-    final val jobJson4 = JobJson(
+    final val jobJsonPrintlnJob4 = JobJson(
         version = 1,
         jobSignature = "java.lang.System.out.println(java.lang.String)",
         jobName = "java.lang.System.out.println(job4)",
@@ -484,7 +484,7 @@ class MyIntegrationTest {
         metadata = null
     )
 
-    final val jobJson5 = JobJson(
+    final val jobJsonPrintlnJob5 = JobJson(
         version = 1,
         jobSignature = "java.lang.System.out.println(java.lang.String)",
         jobName = "java.lang.System.out.println(job5)",
@@ -508,7 +508,7 @@ class MyIntegrationTest {
         metadata = null
     )
 
-    final val jobJson6 = JobJson(
+    final val jobJsonPrintlnJob6 = JobJson(
         version = 1,
         jobSignature = "java.lang.System.out.println(java.lang.String)",
         jobName = "java.lang.System.out.print(job6)",
@@ -532,19 +532,19 @@ class MyIntegrationTest {
         metadata = null
     )
 
-    val serializedjobjson1 = serialize(jobJson1)
-    val serializedjobjson2 = serialize(jobJson2)
-    val serializedjobjson3 = serialize(jobJson3)
-    val serializedjobjson4 = serialize(jobJson4)
-    val serializedjobjson5 = serialize(jobJson5)
-    val serializedjobjson6 = serialize(jobJson6)
+    final val serializedjobJsonPrintJob1 = serialize(jobJsonPrintJob1)
+    final val serializedjobJsonPrintJob2 = serialize(jobJsonPrintJob2)
+    final val serializedjobJsonPrintlnJob3 = serialize(jobJsonPrintlnJob3)
+    final val serializedjobJsonPrintlnJob4 = serialize(jobJsonPrintlnJob4)
+    final val serializedjobJsonPrintlnJob5 = serialize(jobJsonPrintlnJob5)
+    final val serializedjobJsonPrintlnJob6 = serialize(jobJsonPrintlnJob6)
 
 
     final val singleStateJobDTO = JobDTO(
         currentPage = 0,
         hasNext = false,
         hasPrevious = false,
-        items = listOf(jobJson1),
+        items = listOf(jobJsonPrintJob1),
         limit = 10,
         offset = 0,
         total = 1,
@@ -600,13 +600,13 @@ class MyIntegrationTest {
         JobSignatureDTO(
             jobSignature = "com.example.Class.path.to.method(java.lang.String,java.lang.String)",
             jobArguments = jobArgumentsForJobSignatureThatDoesntOverride,
-            jobTime = OffsetDateTime.of(2023, 4, 25, 17, 3, 40, 113000, ZoneOffset.UTC)
+            jobTime = OffsetDateTime.of(2023, 5, 25, 17, 3, 40, 113000, ZoneOffset.UTC)
         )
 
     final val jobSignatureThatOverrides = JobSignatureDTO(
-        jobSignature = "com.example.Class.path.to.method(java.lang.String)",
+        jobSignature = "java.lang.System.out.println(java,lang.String)",
         jobArguments = jobArgumentsForJobSignatureThatOverrides,
-        jobTime = OffsetDateTime.of(2023, 4, 25, 17, 3, 40, 113000, ZoneOffset.UTC)
+        jobTime = OffsetDateTime.of(2023, 5, 25, 17, 3, 40, 113000, ZoneOffset.UTC)
 
     )
 
@@ -635,17 +635,79 @@ class MyIntegrationTest {
     )
 
 
-    private fun populateJobrunrJobs() {
-        jdbcTemplateObject.update(
-            "" +
-                    "INSERT INTO jobrunr_jobs (id,version,jobasjson,jobsignature,state,createdat,updatedat,scheduledat,recurringjobid ) VALUES ('13c47255-3c06-44dd-9b1a-5421641d26ee',1,'${serializedjobjson1}','java.lang.System.out.print(java.lang.String)','SUCCEEDED','2023-04-24 08:07:28.361810','2023-04-24 08:07:28.361810',null,null);" +
-                    "INSERT INTO jobrunr_jobs (id,version,jobasjson,jobsignature,state,createdat,updatedat,scheduledat,recurringjobid ) VALUES ('23c47255-3c06-44dd-9b1a-5421641d26ee',1,'${serializedjobjson2}','java.lang.System.out.print(java.lang.String)','FAILED','2023-04-24 08:07:28.361810','2023-04-24 08:07:28.361810',null,null);" +
-                    "INSERT INTO jobrunr_jobs (id,version,jobasjson,jobsignature,state,createdat,updatedat,scheduledat,recurringjobid ) VALUES ('33c47255-3c06-44dd-9b1a-5421641d26ee',1,'${serializedjobjson3}','java.lang.System.out.println(java.lang.String)','DELETED','2023-04-24 08:07:28.361810','2023-04-24 08:07:28.361810',null,null);" +
-                    "INSERT INTO jobrunr_jobs (id,version,jobasjson,jobsignature,state,createdat,updatedat,scheduledat,recurringjobid ) VALUES ('43c47255-3c06-44dd-9b1a-5421641d26ee',1,'${serializedjobjson4}','java.lang.System.out.println(java.lang.String)','SCHEDULED','2023-04-24 08:07:28.361810','2023-04-24 08:07:28.361810','2023-05-24 08:07:28.361810',null);" +
-                    "INSERT INTO jobrunr_jobs (id,version,jobasjson,jobsignature,state,createdat,updatedat,scheduledat,recurringjobid ) VALUES ('53c47255-3c06-44dd-9b1a-5421641d26ee',1,'${serializedjobjson5}','java.lang.System.out.println(java.lang.String)','ENQUEUED','2023-04-24 08:07:28.361810','2023-04-24 08:07:28.361810','2023-04-24 08:07:28.361810',null);" +
-                    "INSERT INTO jobrunr_jobs (id,version,jobasjson,jobsignature,state,createdat,updatedat,scheduledat,recurringjobid ) VALUES ('63c47255-3c06-44dd-9b1a-5421641d26ee',1,'${serializedjobjson6}','java.lang.System.out.println(java.lang.String)','PROCESSING','2023-04-24 08:07:28.361810','2023-04-24 08:07:28.361810','2023-04-24 08:07:28.361810',null);"
+    val listOfJobs = listOf(
+        arrayOf("13c47255-3c06-44dd-9b1a-5421641d26ee",
+            1,
+            serializedjobJsonPrintJob1,
+            "java.lang.System.out.print(java.lang.String)",
+            "SUCCEEDED",
+            "2023-04-24 08:07:28.361810",
+            "2023-04-24 08:07:28.361810",
+            null,
+            null
+        ),
+        arrayOf("23c47255-3c06-44dd-9b1a-5421641d26ee",
+            1,
+            serializedjobJsonPrintJob2,
+            "java.lang.System.out.print(java.lang.String)",
+            "FAILED",
+            "2023-04-24 08:07:28.361810",
+            "2023-04-24 08:07:28.361810",
+            null,
+            null
+        ),
+        arrayOf("33c47255-3c06-44dd-9b1a-5421641d26ee",
+            1,
+            serializedjobJsonPrintlnJob3,
+            "java.lang.System.out.println(java.lang.String)",
+            "DELETED",
+            "2023-04-24 08:07:28.361810",
+            "2023-04-24 08:07:28.361810",
+            null,
+            null
+        ),
+        arrayOf("43c47255-3c06-44dd-9b1a-5421641d26ee",
+            1,
+            serializedjobJsonPrintlnJob4,
+            "java.lang.System.out.println(java.lang.String)",
+            "SCHEDULED",
+            "2023-04-24 08:07:28.361810",
+            "2023-04-24 08:07:28.361810",
+            "2023-04-24 08:07:28.361810",
+            null
+        ),
+        arrayOf("53c47255-3c06-44dd-9b1a-5421641d26ee",
+            1,
+            serializedjobJsonPrintlnJob5,
+            "java.lang.System.out.println(java.lang.String)",
+            "ENQUEUED",
+            "2023-04-24 08:07:28.361810",
+            "2023-04-24 08:07:28.361810",
+            "2023-04-24 08:07:28.361810",
+            null
+        ),
+        arrayOf("63c47255-3c06-44dd-9b1a-5421641d26ee",
+            1,
+            serializedjobJsonPrintlnJob6,
+            "java.lang.System.out.println(java.lang.String)",
+            "PROCESSING",
+            "2023-04-24 08:07:28.361810",
+            "2023-04-24 08:07:28.361810",
+            "2023-04-24 08:07:28.361810",
+            null
         )
+    )
 
+
+    private fun populateJobrunrJobs() {
+
+        for (job in listOfJobs) {
+            jdbcTemplateObject.update(
+                "INSERT INTO jobrunr_jobs (id, version, jobasjson, jobsignature, state, createdat, updatedat, scheduledat, recurringjobid) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                *job
+            )
+        }
     }
 
     private fun convertToLocalDateTime(timeToConvert: OffsetDateTime): LocalDateTime {

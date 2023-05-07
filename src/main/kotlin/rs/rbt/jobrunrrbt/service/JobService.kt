@@ -1,6 +1,8 @@
 package rs.rbt.jobrunrrbt.service
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -20,11 +22,8 @@ import java.util.*
 @Service
 class JobService {
 
-    /** The above code is using the `@Autowired` annotation to inject an instance of the
-    `JobrunrJobRepository` class into the current class. The `lateinit` keyword is used to indicate
-    that the variable will be initialized later, after the class is constructed. */
     @Autowired
-    lateinit var jobrunrJobRepository: JobrunrJobRepository
+    private lateinit var jobrunrJobRepository: JobrunrJobRepository
 
     /**
      * The function searches for job data based on state, offset, limit, order, and optional parameters
@@ -43,7 +42,7 @@ class JobService {
      * @return The function `searchByStateAndParams` returns a `JobDTO` object.
      */
     fun searchByStateAndParams(
-        state: String,
+        state: State,
         offset: Int,
         limit: Int,
         order: String,
@@ -55,15 +54,15 @@ class JobService {
 
         return when (parameter) {
             CLASS -> {
-                returnAllJobsWhereClassMatches(state, value, offset / limit, limit, order)
+                returnAllJobsWhereClassMatches(state.name, value, offset / limit, limit, order)
             }
 
             METHOD -> {
-                returnAllJobsWhereMethodMatches(state, value, offset / limit, limit, order)
+                returnAllJobsWhereMethodMatches(state.name, value, offset / limit, limit, order)
             }
 
             else -> {
-                returnAllJobsWhereClassOrMethodMatch(state, value, offset / limit, limit, order)
+                returnAllJobsWhereClassOrMethodMatch(state.name, value, offset / limit, limit, order)
             }
         }
     }
@@ -77,14 +76,15 @@ class JobService {
      * @param order The order in which the jobs should be returned.
      * @return A JobDTO object
      */
-    fun returnAllJobsWhereStateMatches(state: String, offset: Int, limit: Int, order: String): JobDTO {
+    fun returnAllJobsWhereStateMatches(state: State, offset: Int, limit: Int, order: String): JobDTO {
 
         val sort = getSortFromOrder(order)
+        val pageRequest = PageRequest.of(offset, limit, sort)
 
-        val jobList = jobrunrJobRepository.findJobrunrJobsByState(state, PageRequest.of(offset, limit, sort))
+        val jobList = jobrunrJobRepository.findJobrunrJobsByState(state.name, pageRequest)
         val returnList = makeReturnList(jobList)
 
-        val pageInfo = createPageInfoDTO(jobList.size, limit, offset)
+        val pageInfo = createPageInfo(jobList.size, limit, offset)
 
         return JobDTO(
             offset,
@@ -119,7 +119,7 @@ class JobService {
 
         val total = jobrunrJobRepository.countJobsWhereClassMatches(state, value)
 
-        val pageInfoDTO = createPageInfoDTO(total, limit, offset)
+        val pageInfoDTO = createPageInfo(total, limit, offset)
 
         return JobDTO(
             offset,
@@ -154,7 +154,7 @@ class JobService {
 
         val total = jobrunrJobRepository.countJobsByClassAndMethod(state, value)
 
-        val pageInfoDTO = createPageInfoDTO(total, limit, offset)
+        val pageInfoDTO = createPageInfo(total, limit, offset)
 
 
         return JobDTO(
@@ -191,7 +191,7 @@ class JobService {
 
         val total = jobrunrJobRepository.countJobsWhereMethodMatches(state, regex)
 
-        val pageInfoDTO = createPageInfoDTO(total, limit, offset)
+        val pageInfoDTO = createPageInfo(total, limit, offset)
 
         return JobDTO(
             offset,
@@ -269,8 +269,7 @@ class JobService {
     valid, it checks if there are any possible duplicates of the job in the job repository. If there
     are duplicates, it checks if the job arguments are the same and updates the scheduled time of
     the duplicate job. If there are no duplicates, it creates a new job with the given signature,
-    arguments, and scheduled time. The function uses the Jobrunr library to interact with the job
-    repository. The @Transactional annotation */
+    arguments, and scheduled time. */
     @Transactional
     fun createJobs(jobs: List<JobSignatureDTO>) {
 
@@ -278,7 +277,7 @@ class JobService {
             if (Regex(REGEX_TO_CHECK_IF_SIGNATURE_IS_VALID).find(oneOfJobs.jobSignature)?.value.equals(oneOfJobs.jobSignature)) {
 
                 val listOfPossibleDuplicates =
-                    jobrunrJobRepository.findJobrunrJobsBySignatureIfNotBeingProcessed(oneOfJobs.jobSignature)
+                    jobrunrJobRepository.findJobrunrJobsBySignatureIfScheduled(oneOfJobs.jobSignature)
 
                 if (listOfPossibleDuplicates.isNotEmpty()) {
                     val duplicate = checkForDuplicates(oneOfJobs.jobArguments, listOfPossibleDuplicates)
@@ -347,20 +346,23 @@ private fun makeReturnList(jobList: List<JobrunrJob>): List<JobJson> {
 }
 
 /**
- * It creates a PageInfoDTO object with the given total, limit, and offset
+ * It creates a PageInfo object with the given total, limit, and offset
  *
  * @param total The total number of items in the collection.
  * @param limit The number of items to return in the page.
  * @param offset The page number.
- * @return PageInfoDTO
+ * @return PageInfo
  */
-private fun createPageInfoDTO(total: Int, limit: Int, offset: Int): PageInfoDTO {
+private fun createPageInfo(total: Int, limit: Int, offset: Int): PageInfo {
 
-    val totalPages = (total - 1) / limit + 1
-    val hasNext = offset < totalPages - 1
-    val hasPrevious = offset > 0
+    val pageRequest = PageRequest.of(offset, limit)
+    val page: Page<*> = PageImpl<Any?>(emptyList(), pageRequest, total.toLong())
 
-    return PageInfoDTO(total, totalPages, hasNext, hasPrevious)
+    val totalPages = page.totalPages
+    val hasNext = page.hasNext()
+    val hasPrevious = page.hasPrevious()
+
+    return PageInfo(total, totalPages.coerceAtLeast(1), hasNext, hasPrevious)
 }
 
 /**

@@ -23,7 +23,7 @@ export default function EditJob(props) {
 
 
         const response = await fetch(`http://localhost:8080/api/v1/jobs/${props.jobInfo.id}`, {
-            method: "PUT", // or 'PUT'
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -41,7 +41,7 @@ export default function EditJob(props) {
         classNameWithFirstCharUpper = className.current.value.charAt(0).toUpperCase() + className.current.value.slice(1).toLowerCase()
 
         const response = await fetch(`http://localhost:8080/api/v1/jobs/${props.jobInfo.id}`, {
-            method: "PUT", // or 'PUT'
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },

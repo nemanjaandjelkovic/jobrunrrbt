@@ -17,8 +17,8 @@ Jobs status and functionality for jobs status.
 | Failed | Jobs that ran in to some sort of error and did not finish processing successfully.| They can be edited, reenqueued and deleted. |
 | Deleted | Jobs that were automatically deleted by the system, or deleted by the user. |They can be searched.|
 
-Dashboard also allows user preview of jobs that are in database, as well as options to configure them. This includes changing scheduled time where applicable as well as package,class,method and arguments.
-There is also an option to batch reenqueue jobs by providing csv with job id's.
+The dashboard also allows user preview of jobs that are in the database, as well as options to configure them. This includes changing scheduled times where applicable, as well as package, class, method and arguments.
+There is also an option to batch reenqueue jobs by providing CSV with job id's.
 ## Installation and Configuration
 The easiest way to install application and dashboard is with docker.
 

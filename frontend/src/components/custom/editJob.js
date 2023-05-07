@@ -22,7 +22,7 @@ export default function EditJob(props) {
         classNameWithFirstCharUpper = className.current.value.charAt(0).toUpperCase() + className.current.value.slice(1).toLowerCase()
 
 
-        const response = await fetch(`http://localhost:8080/api/v1/jobs/${props.jobInfo.id}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${props.jobInfo.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export default function EditJob(props) {
     async function updateJobWithOutTime(e) {
         classNameWithFirstCharUpper = className.current.value.charAt(0).toUpperCase() + className.current.value.slice(1).toLowerCase()
 
-        const response = await fetch(`http://localhost:8080/api/v1/jobs/${props.jobInfo.id}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${props.jobInfo.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

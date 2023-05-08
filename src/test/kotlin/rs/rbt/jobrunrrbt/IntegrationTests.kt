@@ -85,7 +85,7 @@ class MyIntegrationTest {
     fun `search by state with incorrect parameter`() {
         val response =
             restTemplate.getForObject("http://localhost:${port}/api/v1/jobs/ILLEGAL-STATE", IllegalJobState::class.java)
-        assertThat(response.message).isEqualTo("No enum constant rs.rbt.jobrunrrbt.model.State.ILLEGAL-STATE")
+        assertThat(response.message).isEqualTo("No enum constant rs.rbt.jobrunrrbt.model.JobState.ILLEGAL-STATE")
     }
 
     @Test

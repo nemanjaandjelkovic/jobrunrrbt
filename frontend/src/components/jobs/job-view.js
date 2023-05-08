@@ -70,7 +70,6 @@ const JobView = (props) => {
 
     React.useEffect(() => {
         getJob(jobId);
-
         const eventSource = new EventSource(process.env.REACT_APP_SSE_URL + "/jobs/" + jobId);
         eventSource.addEventListener('message', e => onJob(JSON.parse(e.data)));
         eventSource.addEventListener('close', e => eventSource.close());
@@ -157,6 +156,14 @@ const JobView = (props) => {
         setOrder(!order);
     };
 
+    function  handleJobChange(job){
+        console.log("ovo je novi")
+        console.log(job)
+        console.log(job.jobDetails.packageName)
+        let test=job
+        setJob(test)
+    }
+
     return (
         <main className={classes.content}>
             {isLoading
@@ -217,7 +224,7 @@ const JobView = (props) => {
 
                             {stateBreadcrumb.state !== 'DELETED' &&
                             <Grid item xs={12}>
-                                <EditJob jobInfo={job} state={stateBreadcrumb.state}>
+                                <EditJob jobInfo={job} state={stateBreadcrumb.state} onJobChange={handleJobChange}>
                                 </EditJob>
                             </Grid>
                             }

@@ -52,6 +52,7 @@ const AdminUI = function () {
                         <Route path="/dashboard/jobs-create" component={JobsCreate}/>
                         <Route path="/dashboard/servers" component={Servers}/>
                         <Redirect from="/dashboard" to="/dashboard/overview"/>
+                        <Redirect from="/" to="/dashboard/overview"/>
                     </Switch>
                 </main>
             </div>

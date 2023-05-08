@@ -147,14 +147,11 @@ const JobsTable = (props) => {
         history.push(`?${urlSearchParams.toString()}`);
     };
 
-    const handleChangeRowsPerPage = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
+    const handleChangeRowsPerPage = (event) => {
         jobPage.limit = parseInt(event.target.value);
         setRowsPerPage(parseInt(event.target.value));
-        props.jobListLimit(event.target.value)
-        if(parseInt(event.target.value)>jobPage.total && jobPage.currentPage!==0)
-        {
+        props.jobListLimit(event.target.value);
+        if (parseInt(event.target.value) > jobPage.total && jobPage.currentPage !== 0) {
             let urlSearchParams = new URLSearchParams(location.search);
             urlSearchParams.set("page", 0);
             history.push(`?${urlSearchParams.toString()}`);

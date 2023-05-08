@@ -8,6 +8,7 @@ import FormControl from "@material-ui/core/FormControl";
 import {TextField} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import {Save} from "@material-ui/icons";
+import axios from "axios";
 
 
 export default function EditJob(props) {
@@ -18,40 +19,62 @@ export default function EditJob(props) {
 
     let classNameWithFirstCharUpper
 
-    async function updateJobWithTime(e) {
+    // async function updateJobWithTime(e) {
+        function updateJobWithTime(e) {
         classNameWithFirstCharUpper = className.current.value.charAt(0).toUpperCase() + className.current.value.slice(1).toLowerCase()
 
-
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${props.jobInfo.id}`, {
-            method: "PUT",
+        axios.put(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${props.jobInfo.id}`, {
+            packageName: packetName.current.value,
+            methodName: methodName.current.value,
+            className: classNameWithFirstCharUpper,
+            scheduledTime: date.current.value + ":00.000000Z"
+        }, {
             headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                packageName: packetName.current.value,
-                methodName: methodName.current.value,
-                className: classNameWithFirstCharUpper,
-                scheduledTime: date.current.value + ":00.000000Z"
-            }),
-        });
-        window.location.reload();
+                'Content-Type': 'application/json'
+            }
+        })
+        // const response = await fetch(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${props.jobInfo.id}`, {
+        //     method: "PUT",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //         packageName: packetName.current.value,
+        //         methodName: methodName.current.value,
+        //         className: classNameWithFirstCharUpper,
+        //         scheduledTime: date.current.value + ":00.000000Z"
+        //     }),
+        // });
+        // window.location.reload();
     }
 
-    async function updateJobWithOutTime(e) {
+    // async function updateJobWithOutTime(e) {
+       function updateJobWithOutTime(e) {
         classNameWithFirstCharUpper = className.current.value.charAt(0).toUpperCase() + className.current.value.slice(1).toLowerCase()
 
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${props.jobInfo.id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                packageName: packetName.current.value,
-                methodName: methodName.current.value,
-                className: classNameWithFirstCharUpper,
-            }),
-        });
-        window.location.reload();
+           axios.put(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${props.jobInfo.id}`, {
+               packageName: packetName.current.value,
+               methodName: methodName.current.value,
+               className: classNameWithFirstCharUpper
+           }, {
+               headers: {
+                   'Content-Type': 'application/json'
+               }
+           })
+           props.jobInfo.jobDetails.packageName=packetName.current.value
+           props.onJobChange(props.jobInfo)
+        // const response = await fetch(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${props.jobInfo.id}`, {
+        //     method: "PUT",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //         packageName: packetName.current.value,
+        //         methodName: methodName.current.value,
+        //         className: classNameWithFirstCharUpper,
+        //     }),
+        // });
+        //window.location.reload();
     }
 
     let dateJob

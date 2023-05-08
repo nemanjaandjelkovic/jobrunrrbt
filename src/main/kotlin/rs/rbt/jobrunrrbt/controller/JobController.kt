@@ -7,7 +7,7 @@ import rs.rbt.jobrunrrbt.dto.JobDTO
 import rs.rbt.jobrunrrbt.dto.JobSignatureDTO
 import rs.rbt.jobrunrrbt.dto.UpdateJobReceivedDTO
 import rs.rbt.jobrunrrbt.helper.*
-import rs.rbt.jobrunrrbt.model.State
+import rs.rbt.jobrunrrbt.model.JobState
 import rs.rbt.jobrunrrbt.service.JobService
 
 
@@ -26,7 +26,7 @@ class JobController {
      * This Kotlin function searches for jobs based on state and optional parameters such as offset,
      * limit, order, search parameter, and search value.
      *
-     * @param state The state parameter is a path variable that is required and represents the state
+     * @param jobState The state parameter is a path variable that is required and represents the state
      * for which the job search is being performed.
      * @param offset The offset parameter is used to specify the starting point of the search results.
      * It determines the number of items to skip before starting to return the results. The default
@@ -44,14 +44,14 @@ class JobController {
      */
     @GetMapping("/{state}")
     fun searchByStateAndParam(
-        @PathVariable(value = STATE, required = true) state: State,
+        @PathVariable(value = STATE, required = true) jobState: JobState,
         @RequestParam(value = OFFSET, required = false, defaultValue = "0") offset: Int,
         @RequestParam(value = LIMIT, required = false, defaultValue = "10") limit: Int,
         @RequestParam(value = ORDER, required = false, defaultValue = "updatedAt:DESC") order: String,
         @RequestParam(value = SEARCH_PARAMETER, required = false) parameter: String?,
         @RequestParam(value = SEARCH_VALUE, required = false) value: String?,
     ): ResponseEntity<JobDTO> {
-        return ResponseEntity.ok(jobService.searchByStateAndParams(state, offset, limit, order, parameter, value))
+        return ResponseEntity.ok(jobService.searchByStateAndParams(jobState, offset, limit, order, parameter, value))
     }
 
     /**

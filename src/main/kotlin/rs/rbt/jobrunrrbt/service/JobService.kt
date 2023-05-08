@@ -29,7 +29,7 @@ class JobService {
      * The function searches for job data based on state, offset, limit, order, and optional parameters
      * and values.
      *
-     * @param state The state parameter is a string that represents the state for which the job search
+     * @param jobState The state parameter is a string that represents the state for which the job search
      * is being performed.
      * @param offset The starting index of the results to be returned.
      * @param limit The maximum number of results to be returned in a single query.
@@ -42,7 +42,7 @@ class JobService {
      * @return The function `searchByStateAndParams` returns a `JobDTO` object.
      */
     fun searchByStateAndParams(
-        state: State,
+        jobState: JobState,
         offset: Int,
         limit: Int,
         order: String,
@@ -50,19 +50,19 @@ class JobService {
         value: String?
     ): JobDTO {
         if (parameter.isNullOrBlank() || value.isNullOrBlank())
-            return returnAllJobsWhereStateMatches(state, offset, limit, order)
+            return returnAllJobsWhereStateMatches(jobState, offset, limit, order)
 
         return when (parameter) {
             CLASS -> {
-                returnAllJobsWhereClassMatches(state.name, value, offset / limit, limit, order)
+                returnAllJobsWhereClassMatches(jobState.name, value, offset / limit, limit, order)
             }
 
             METHOD -> {
-                returnAllJobsWhereMethodMatches(state.name, value, offset / limit, limit, order)
+                returnAllJobsWhereMethodMatches(jobState.name, value, offset / limit, limit, order)
             }
 
             else -> {
-                returnAllJobsWhereClassOrMethodMatch(state.name, value, offset / limit, limit, order)
+                returnAllJobsWhereClassOrMethodMatch(jobState.name, value, offset / limit, limit, order)
             }
         }
     }
@@ -70,18 +70,18 @@ class JobService {
     /**
      *  This function returns a list of jobs where the state matches the given state
      *
-     * @param state The state of the job.
+     * @param jobState The state of the job.
      * @param offset The offset of the first job to return.
      * @param limit The number of jobs to return
      * @param order The order in which the jobs should be returned.
      * @return A JobDTO object
      */
-    fun returnAllJobsWhereStateMatches(state: State, offset: Int, limit: Int, order: String): JobDTO {
+    fun returnAllJobsWhereStateMatches(jobState: JobState, offset: Int, limit: Int, order: String): JobDTO {
 
         val sort = getSortFromOrder(order)
         val pageRequest = PageRequest.of(offset, limit, sort)
 
-        val jobList = jobrunrJobRepository.findJobrunrJobsByState(state.name, pageRequest)
+        val jobList = jobrunrJobRepository.findJobrunrJobsByState(jobState.name, pageRequest)
         val returnList = makeReturnList(jobList)
 
         val pageInfo = createPageInfo(jobList.size, limit, offset)

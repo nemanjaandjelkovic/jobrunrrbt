@@ -1,7 +1,7 @@
 package rs.rbt.jobrunrrbt.model
 
 /** A Kotlin class that holds valid job states. */
-enum class State {
+enum class JobState {
 
     SCHEDULED,
     ENQUEUED,

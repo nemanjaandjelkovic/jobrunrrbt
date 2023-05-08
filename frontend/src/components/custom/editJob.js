@@ -8,7 +8,6 @@ import FormControl from "@material-ui/core/FormControl";
 import {TextField} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import {Save} from "@material-ui/icons";
-import axios from "axios";
 
 
 export default function EditJob(props) {
@@ -19,30 +18,39 @@ export default function EditJob(props) {
 
     let classNameWithFirstCharUpper
 
-    function updateJobWithTime(e) {
+    async function updateJobWithTime(e) {
         classNameWithFirstCharUpper = className.current.value.charAt(0).toUpperCase() + className.current.value.slice(1).toLowerCase()
-        axios.post("http://localhost:8080/api/update", null, {
-            params: {
-                id: props.jobInfo.id,
+
+
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${props.jobInfo.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
                 packageName: packetName.current.value,
                 methodName: methodName.current.value,
                 className: classNameWithFirstCharUpper,
                 scheduledTime: date.current.value + ":00.000000Z"
-            }
-        })
+            }),
+        });
         window.location.reload();
     }
 
-    function updateJobWithOutTime(e) {
+    async function updateJobWithOutTime(e) {
         classNameWithFirstCharUpper = className.current.value.charAt(0).toUpperCase() + className.current.value.slice(1).toLowerCase()
-        axios.post("http://localhost:8080/api/update", null, {
-            params: {
-                id: props.jobInfo.id,
+
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${props.jobInfo.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
                 packageName: packetName.current.value,
                 methodName: methodName.current.value,
-                className: classNameWithFirstCharUpper
-            }
-        })
+                className: classNameWithFirstCharUpper,
+            }),
+        });
         window.location.reload();
     }
 

@@ -5,7 +5,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import rs.rbt.jobrunrrbt.helper.*
-import java.time.Instant
+import java.time.LocalDateTime
 
 /** This is the Kotlin version of the JobrunrJob class. */
 @Entity
@@ -28,14 +28,14 @@ open class JobrunrJob {
     open var state: String? = null
 
     @Column(name = CREATED_AT, nullable = false)
-    open var createdat: Instant? = null
+    open var createdat: LocalDateTime? = null
 
     @Column(name = UPDATED_AT, nullable = false)
-    open var updatedat: Instant? = null
+    open var updatedat: LocalDateTime? = null
 
     @Column(name = SCHEDULED_AT)
-    open var scheduledat: Instant? = null
+    open var scheduledat: LocalDateTime? = null
 
     @Column(name = RECURRING_JOB_ID, length = 128)
-    open var recurringjobid: Any? = null
+    open var recurringjobid: String? = null
 }

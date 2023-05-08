@@ -17,7 +17,8 @@ Jobs status and functionality for jobs status.
 | Failed | Jobs that ran in to some sort of error and did not finish processing successfully.| They can be edited, reenqueued and deleted. |
 | Deleted | Jobs that were automatically deleted by the system, or deleted by the user. |They can be searched.|
 
-
+The dashboard also allows user preview of jobs that are in the database, as well as options to configure them. This includes changing scheduled times where applicable, as well as package, class, method and arguments.
+There is also an option to batch reenqueue jobs by providing CSV with job id's.
 ## Installation and Configuration
 The easiest way to install application and dashboard is with docker.
 
@@ -34,16 +35,13 @@ In `application.properties` must set configuration for JobRunr and database conf
 spring.datasource.url=jdbc:postgresql://localhost:DATABASE_PORT/DATABASE_NAME
 spring.datasource.username=DATABASE_USERNAME
 spring.datasource.password=DATABASE_PASSWORD
-org.jobrunr.background-job-server.enabled=true
-org.jobrunr.dashboard.enabled=true
-org.jobrunr.job-scheduler.enabled=true
-org.jobrunr.dashboard.port=8000
+
 ```
 
 ### Dashboard configuration
 
 
-In `package.json` must change server name where is hosted application:
+In `package.json` change server name to where the application is hosted:
 
 ```bash
 "proxy": "http://server:8000",
@@ -66,7 +64,7 @@ git clone https://github.com/nemanjaandjelkovic/jobrunrrbt.git
 
 ### Dashboard
 
-Before start dashboard you need to run backend for full functionality.
+Before running the dashboard you need to run backend for full functionality.
 
 - **Install node version 14+**
 
@@ -108,15 +106,15 @@ spring.datasource.password=DATABASE_PASSWORD
 
 ## Documentation
 
-If you want to see documentation, you need to build application and start dependencies dokka.
+If you want to see documentation, you need to build application first and use dokka plugin.
 
-In documentation, you can see all descriptions of functions and models.
+In documentation, you can see description of functions and models.
 
-The Swagger UI page will then be available at http://server:port/swagger-ui/index.html  
+The Swagger UI page will then be available at `http://server:port/swagger-ui/index.html`  
 
-The OpenAPI description will be available at the following url for json format: http://server:port/v3/api-docs 
+The OpenAPI description will be available at the following url for json format: `http://server:port/v3/api-docs `
 
-Documentation can be available in yaml format as well, on the following path : http://server:port/v3/api-docs.yaml
+Documentation can be available in yaml format as well, on the following path : `http://server:port/v3/api-docs.yaml`
 
 - server: The server name or IP
 - port: The server port

@@ -5,9 +5,13 @@ import rs.rbt.jobrunrrbt.helper.OBJECT
 
 /**  The JobParameters class is a data class that holds the class name, the actual class name, and the
 job object. */
-class JobParameters(
+data class JobParameters(
     var className: String,
     var actualClassName: String,
     @JsonProperty(OBJECT)
-    var jobObject: String,
-)
+    var jobObject: String?,
+) {
+    override fun toString(): String {
+        return actualClassName
+    }
+}

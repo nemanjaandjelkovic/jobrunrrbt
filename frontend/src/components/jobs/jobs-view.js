@@ -82,11 +82,10 @@ const JobsView = (props) => {
         if (parameter === "class") {
             searchValue = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
         }
-        axios.get("http://localhost:8080/api/search", {
+        axios.get(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${jobState.toUpperCase()}`, {
             params: {
                 searchParameter: parameter,
                 searchValue: searchValue,
-                state: jobState.toUpperCase(),
                 offset: offset,
                 limit: limit,
                 order: sort
@@ -104,12 +103,11 @@ const JobsView = (props) => {
     React.useEffect(() => {
         setIsLoading(true);
         const offset = (page) * limitJobsPerPage;
-        const limit = limitJobsPerPage;
-        axios.get("http://localhost:8080/api/state", {
+        axios.get(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${jobState.toUpperCase()}`, {
             params: {
                 state: jobState.toUpperCase(),
                 offset: offset,
-                limit: limit,
+                limit: limitJobsPerPage,
                 order: sort,
             }
         })
@@ -129,7 +127,7 @@ const JobsView = (props) => {
         if (searchPar === "class") {
             searchValue = searchVal.charAt(0).toUpperCase() + searchVal.slice(1).toLowerCase()
         }
-        axios.get("http://localhost:8080/api/search", {
+        axios.get(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/${jobState.toUpperCase()}`, {
             params: {
                 searchParameter: searchPar,
                 searchValue: searchValue,

@@ -9,7 +9,8 @@ export default function JobType(props) {
     const [jobsTypeList, setJobsTypeList] = React.useState([]);
 
     function jobType() {
-        axios.get("http://localhost:8080/api/jobSignatures", {})
+        console.log(process.env)
+        axios.get(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs/unique-signatures`, {})
             .then(
                 response => {
                     setJobsTypeList(response.data)

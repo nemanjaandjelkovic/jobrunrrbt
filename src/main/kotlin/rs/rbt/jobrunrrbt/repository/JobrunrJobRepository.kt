@@ -2,14 +2,22 @@ package rs.rbt.jobrunrrbt.repository
 
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import rs.rbt.jobrunrrbt.helper.*
 import rs.rbt.jobrunrrbt.model.JobrunrJob
-import java.time.Instant
 import java.util.*
 
 interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
+
+    /** This function is querying the database to find all Jobrunr jobs with a specific job signature
+    that are in the "SCHEDULED" state. It uses a native SQL query with
+    a parameterized job signature value. The function returns a list of JobrunrJob objects that
+    match the query criteria. */
+    @Query(
+        """select * from jobrunr_jobs j 
+        where j.jobsignature = ?1 and j.state = 'SCHEDULED'""", nativeQuery = true
+    )
+    fun findJobrunrJobsBySignatureIfScheduled(jobSignature: String): List<JobrunrJob>
 
     /**
      * `findJobrunrJobsByState` returns a `List<JobrunrJob>` and takes a `String` and a `Pageable` as
@@ -47,6 +55,7 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
         """select * from jobrunr_jobs where state =?1 and jobsignature ~ ?2""", nativeQuery = true
     )
     fun findJobsWhereMethodMatches(state: String, regex: String, pageable: Pageable): MutableList<JobrunrJob>
+
     @Query(
         """select distinct jobsignature from jobrunr_jobs""", nativeQuery = true
     )
@@ -80,35 +89,4 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
     )
     fun countJobsByClassAndMethod(state: String, value: String): Int
 
-    /**
-     * `updateJobSignature` updates the `jobsignature` column of the `JobrunrJob` table with the given
-     * `value` where the `id` column equals the given `id`
-     *
-     * @param id The id of the job to update
-     * @param value the value to update the column with
-     */
-    @Modifying
-    @Query("update JobrunrJob set jobsignature = ?2 where id = ?1")
-    fun updateJobSignature(id: String, value: String)
-
-    /**
-     * It updates the jobasjson column of the JobrunrJob table with the value of the second parameter
-     * where the id column is equal to the first parameter.
-     *
-     * @param id The id of the job
-     * @param value The value to be updated
-     */
-    @Modifying
-    @Query("update JobrunrJob set jobasjson = ?2 where id = ?1")
-    fun updateJobAsJson(id: String, value: String)
-
-    /**
-     * It updates the scheduledat field of the JobrunrJob table with the value of the second parameter.
-     *
-     * @param id The id of the job
-     * @param value The value to be updated
-     */
-    @Modifying
-    @Query("update JobrunrJob set scheduledat = ?2 where id = ?1")
-    fun updateScheduledTime(id: String, value: Instant)
 }

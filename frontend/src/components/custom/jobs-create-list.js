@@ -37,7 +37,7 @@ export default function JobsCreateList(props) {
             jobs.push(it.jobData)
         })
         if(jobs.length>0){
-            axios.post("http://localhost:8080/api/enqueueBatchJobs", jobs)
+            axios.post(`${process.env.REACT_APP_BACKEND_APP_URL}/api/v1/jobs`, jobs)
         }
     }
 

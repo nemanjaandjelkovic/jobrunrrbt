@@ -1,10 +1,11 @@
 package rs.rbt.jobrunrrbt.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonInclude
 
 /**  It's a Kotlin data class that represents a job in the queue */
 @JsonIgnoreProperties(ignoreUnknown = true)
-class JobJson(
+data class JobJson(
     var version: Long,
     var jobSignature: String,
     var jobName: String,
@@ -13,5 +14,6 @@ class JobJson(
     var jobDetails: JobDetails,
     var id: String,
     var jobHistory: ArrayList<JobHistory> = arrayListOf(),
-    var metadata: Any,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    var metadata: Any?,
 )

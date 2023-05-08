@@ -356,7 +356,7 @@ private fun makeReturnList(jobList: List<JobrunrJob>): List<JobJson> {
  */
 private fun createPageInfo(total: Int, limit: Int, offset: Int, returnList: List<JobJson>): PageInfo {
 
-    val pageRequest = PageRequest.of(offset, limit)
+    val pageRequest = PageRequest.of(offset/limit, limit)
     val page: Page<*> = PageImpl<Any?>(returnList, pageRequest, total.toLong())
 
     val totalPages = page.totalPages

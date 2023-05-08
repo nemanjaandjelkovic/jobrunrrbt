@@ -22,6 +22,8 @@ services:
   jobrunr-dashboard:
     image: 'dashboard'
     container_name: dashboard
+    environment:
+      - CORS_STRING=http://localhost:3000
     build:
       context: frontend
       dockerfile: Dockerfile

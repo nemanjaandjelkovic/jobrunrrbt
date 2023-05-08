@@ -13,7 +13,7 @@ import rs.rbt.jobrunrrbt.service.JobService
 
 /** This code defines a Kotlin class called `JobController` that serves as a REST API endpoint for
 handling HTTP requests related to jobs. */
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin(origins = ["\${CORS_STRING}"])
 @RestController
 @RequestMapping("/api/v1/jobs")
 class JobController {

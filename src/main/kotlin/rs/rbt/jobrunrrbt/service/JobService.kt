@@ -84,7 +84,7 @@ class JobService {
         val jobList = jobrunrJobRepository.findJobrunrJobsByState(jobState.name, pageRequest)
         val returnList = makeReturnList(jobList)
 
-        val pageInfo = createPageInfo(jobList.size, limit, offset)
+        val pageInfo = createPageInfo(jobList.size, limit, offset, returnList)
 
         return JobDTO(
             offset,
@@ -119,7 +119,7 @@ class JobService {
 
         val total = jobrunrJobRepository.countJobsWhereClassMatches(state, value)
 
-        val pageInfoDTO = createPageInfo(total, limit, offset)
+        val pageInfoDTO = createPageInfo(total, limit, offset, returnList)
 
         return JobDTO(
             offset,
@@ -154,7 +154,7 @@ class JobService {
 
         val total = jobrunrJobRepository.countJobsByClassAndMethod(state, value)
 
-        val pageInfoDTO = createPageInfo(total, limit, offset)
+        val pageInfoDTO = createPageInfo(total, limit, offset, returnList)
 
 
         return JobDTO(
@@ -191,7 +191,7 @@ class JobService {
 
         val total = jobrunrJobRepository.countJobsWhereMethodMatches(state, regex)
 
-        val pageInfoDTO = createPageInfo(total, limit, offset)
+        val pageInfoDTO = createPageInfo(total, limit, offset, returnList)
 
         return JobDTO(
             offset,
@@ -353,10 +353,10 @@ private fun makeReturnList(jobList: List<JobrunrJob>): List<JobJson> {
  * @param offset The page number.
  * @return PageInfo
  */
-private fun createPageInfo(total: Int, limit: Int, offset: Int): PageInfo {
+private fun createPageInfo(total: Int, limit: Int, offset: Int, returnList: List<JobJson>): PageInfo {
 
     val pageRequest = PageRequest.of(offset, limit)
-    val page: Page<*> = PageImpl<Any?>(emptyList(), pageRequest, total.toLong())
+    val page: Page<*> = PageImpl<Any?>(returnList, pageRequest, total.toLong())
 
     val totalPages = page.totalPages
     val hasNext = page.hasNext()

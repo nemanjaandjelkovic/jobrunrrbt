@@ -28,6 +28,8 @@ interface JobrunrJobRepository : JpaRepository<JobrunrJob, String> {
      */
     fun findJobrunrJobsByState(state: String, pageable: Pageable): List<JobrunrJob>
 
+    fun countJobrunrJobsByState(state: String):Int
+
     /**
      * Find all jobs with a given state and a given method name
      *

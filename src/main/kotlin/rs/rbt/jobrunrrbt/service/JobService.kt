@@ -82,9 +82,10 @@ class JobService {
         val pageRequest = PageRequest.of(offset, limit, sort)
 
         val jobList = jobrunrJobRepository.findJobrunrJobsByState(jobState.name, pageRequest)
+        val total = jobrunrJobRepository.countJobrunrJobsByState(jobState.name)
         val returnList = makeReturnList(jobList)
 
-        val pageInfo = createPageInfo(jobList.size, limit, offset, returnList)
+        val pageInfo = createPageInfo(total, limit, offset, returnList)
 
         return JobDTO(
             offset,
